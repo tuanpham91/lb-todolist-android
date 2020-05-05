@@ -1,6 +1,8 @@
 package com.anhtuan.lbtodolist;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -12,14 +14,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends Activity {
 
-    private static String url = "http://192.168.178.26:8080/todolist";
+    private static String url = "http://192.168.178.26:8080/todolists";
 
     ArrayList<String> listItems=new ArrayList<>();
     ArrayAdapter<String> adapter;
@@ -32,6 +35,7 @@ public class ListActivity extends AppCompatActivity {
         clickButton = (Button) findViewById(R.id.placeholder);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,15 +45,18 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void getList() {
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        //TODO : Add authentication to this :
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                Log.d("Onclick", "Respond : ");
+
                 updateList(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.print("Error");
+                Log.e("Onclick", "Error");
             }
         });
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
@@ -60,6 +67,6 @@ public class ListActivity extends AppCompatActivity {
         ArrayList<String> list = new ArrayList<>(Arrays.asList(response.split(";")));
         adapter.clear();
         adapter.addAll(list);
-
     }
+
 }
