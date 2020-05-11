@@ -6,8 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -16,26 +15,31 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
+import com.anhtuan.pojo.TodoEntry;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ListActivity extends Activity {
 
-    private static String url = "http://192.168.178.26:8080/todolists";
+    private static String url = "http://192.168.178.26:8080/todolist";
 
     ArrayList<String> listItems=new ArrayList<>();
     ArrayAdapter<String> adapter;
     Button clickButton;
-
+    ListView todoListView;
+    Gson gson = new Gson();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view_activity);
         clickButton = (Button) findViewById(R.id.placeholder);
+        todoListView = (ListView) findViewById(R.id.todoList);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
-
+        todoListView.setAdapter(adapter);
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,12 +49,10 @@ public class ListActivity extends Activity {
     }
 
     public void getList() {
-        //TODO : Add authentication to this :
         StringRequest request = new HttpRequestImpl(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Onclick", "Respond : ");
-
+                Log.d("Onclick", "Respond : " + response);
                 updateList(response);
             }
         }, new Response.ErrorListener() {
@@ -64,9 +66,15 @@ public class ListActivity extends Activity {
     }
 
     public void updateList(String response) {
-        ArrayList<String> list = new ArrayList<>(Arrays.asList(response.split(";")));
+        TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
+        ArrayList<String> entryArray = new ArrayList<>();
+        for (TodoEntry entry : entryList) {
+            entryArray.add(entry.getValue());
+        }
         adapter.clear();
-        adapter.addAll(list);
+        adapter.addAll(entryArray);
+        adapter.notifyDataSetChanged();
+        Log.d("adapter", entryArray.toString());
     }
 
 }
