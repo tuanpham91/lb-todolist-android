@@ -9,9 +9,10 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.anhtuan.lbtodolist.R;
+import com.anhtuan.pojo.TodoEntry;
 
 // TODO : https://stackoverflow.com/questions/11281952/listview-with-customized-row-layout-android
-public class ListViewArrayAdapter extends ArrayAdapter<String> {
+public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
 
 
     public ListViewArrayAdapter(@NonNull Context context, int resource) {
@@ -26,9 +27,13 @@ public class ListViewArrayAdapter extends ArrayAdapter<String> {
             convertView = inflater.inflate(R.layout.todolist_entry, null, false);
             holder = new RowListViewHolder(convertView);
             convertView.setTag(holder);
+        } else {
+            holder = (RowListViewHolder) convertView.getTag();
         }
         // TODO Set this right.
-        holder.getUpperText().setText(this.getItem(position));
+        holder.getUpperText().setText(this.getItem(position).getValue());
+        holder.getLowerText().setText("1");
 
+        return convertView;
     }
 }

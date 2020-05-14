@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.anhtuan.custom.ListViewArrayAdapter;
 import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.pojo.TodoEntry;
@@ -27,7 +28,7 @@ public class ListActivity extends Activity {
     private static String url = "http://192.168.178.26:8080/todolist";
 
     ArrayList<String> listItems=new ArrayList<>();
-    ArrayAdapter<String> adapter;
+    ListViewArrayAdapter adapter;
     Button clickButton;
     ListView todoListView;
     Gson gson = new Gson();
@@ -38,7 +39,7 @@ public class ListActivity extends Activity {
         clickButton = (Button) findViewById(R.id.placeholder);
         todoListView = (ListView) findViewById(R.id.todoList);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1);
         todoListView.setAdapter(adapter);
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,14 +68,9 @@ public class ListActivity extends Activity {
 
     public void updateList(String response) {
         TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
-        ArrayList<String> entryArray = new ArrayList<>();
-        for (TodoEntry entry : entryList) {
-            entryArray.add(entry.getValue());
-        }
         adapter.clear();
-        adapter.addAll(entryArray);
+        adapter.addAll(entryList);
         adapter.notifyDataSetChanged();
-        Log.d("adapter", entryArray.toString());
     }
 
 }
