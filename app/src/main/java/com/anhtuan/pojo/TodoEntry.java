@@ -5,18 +5,27 @@ public class TodoEntry {
     private Long date;
     private String language;
     private String keywordCategory;
+    private Long amount;
 
     public TodoEntry(String value, Long date, String language, String keywordCategory) {
         this.value = value;
         this.date = date;
         this.language = language;
         this.keywordCategory = keywordCategory;
+        this.amount = 1L;
     }
 
     public String getValue() {
         return value;
     }
 
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
     public void setValue(String value) {
         this.value = value;
     }
