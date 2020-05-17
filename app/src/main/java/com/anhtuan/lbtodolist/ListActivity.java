@@ -1,13 +1,13 @@
 package com.anhtuan.lbtodolist;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -18,10 +18,7 @@ import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ListActivity extends Activity {
 
@@ -30,6 +27,7 @@ public class ListActivity extends Activity {
     ArrayList<String> listItems=new ArrayList<>();
     ListViewArrayAdapter adapter;
     Button clickButton;
+    ImageButton addButton;
     ListView todoListView;
     Gson gson = new Gson();
     @Override
@@ -37,10 +35,17 @@ public class ListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view_activity);
         clickButton = (Button) findViewById(R.id.placeholder);
+        addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
 
         adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1);
         todoListView.setAdapter(adapter);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCreateDialog();
+            }
+        });
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,4 +78,10 @@ public class ListActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
+    public void openCreateDialog() {
+        Dialog createDialog = new Dialog(this);
+        createDialog.setContentView(R.layout.add_item_dialog);
+        createDialog.setTitle("Add entry");
+        createDialog.show();
+    }
 }
