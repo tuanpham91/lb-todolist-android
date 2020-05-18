@@ -7,12 +7,12 @@ public class TodoEntry {
     private String keywordCategory;
     private Long amount;
 
-    public TodoEntry(String value, Long date, String language, String keywordCategory) {
+    public TodoEntry(String value, Long date, String language, String keywordCategory, Long amount) {
         this.value = value;
         this.date = date;
         this.language = language;
         this.keywordCategory = keywordCategory;
-        this.amount = 1L;
+        this.amount = amount;
     }
 
     public String getValue() {
