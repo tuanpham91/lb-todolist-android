@@ -14,7 +14,6 @@ import com.anhtuan.pojo.TodoEntry;
 // TODO : https://stackoverflow.com/questions/11281952/listview-with-customized-row-layout-android
 public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
 
-
     public ListViewArrayAdapter(@NonNull Context context, int resource) {
         super(context, resource);
     }
@@ -24,7 +23,7 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
         RowListViewHolder holder = null;
         LayoutInflater inflater = LayoutInflater.from(this.getContext());
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.todolist_entry, null, false);
+            convertView = inflater.inflate(R.layout.todolist_entry, parent, false);
             holder = new RowListViewHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -32,7 +31,7 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
         }
         // TODO Set this right.
         holder.getUpperText().setText(this.getItem(position).getValue());
-        holder.getLowerText().setText("1");
+        holder.getLowerText().setText(this.getItem(position).getAmount().toString());
 
         return convertView;
     }

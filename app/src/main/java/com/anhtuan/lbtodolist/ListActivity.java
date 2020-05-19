@@ -122,7 +122,7 @@ public class ListActivity extends Activity {
         TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
         adapter.clear();
         adapter.addAll(entryList);
-        Log.d("List Items Size", entryList.length + " ");
+        Log.d("List Items Size", adapter.getCount() + " ");
         adapter.notifyDataSetChanged();
     }
 
@@ -136,9 +136,12 @@ public class ListActivity extends Activity {
         String itemCategory = cdCategoryET.getText().toString();
         Long itemAmount = Long.valueOf(cdAmountET.getText().toString());
         TodoEntry entry = new TodoEntry(itemName, System.currentTimeMillis(), itemLanguage, itemCategory, itemAmount);
-        String jsonBody = gson.toJson(entry).toString();
+        //TODO :Fix this abomination
+        String jsonBody = "["+gson.toJson(entry).toString()+"]";
+        Log.d("DEBUG", "Add to list this : " + jsonBody);
+
         // TODO
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, addUrl, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
@@ -166,7 +169,8 @@ public class ListActivity extends Activity {
             }
 
         };
-
+        RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
+        requestQueue.add(request);
     }
 
     public void clearEditTexts() {
