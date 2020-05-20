@@ -30,6 +30,7 @@ public class ListActivity extends Activity {
     private static String baseUrl = "http://192.168.178.26:8080";
     private static String addUrl = baseUrl + "/todolist";
     private static String postUrl = baseUrl + "/addtodolist";
+    private static String deleteUrl = baseUrl + "/deletetodolist";
 
     private ArrayList<String> listItems=new ArrayList<>();
     private ListViewArrayAdapter adapter;
@@ -57,7 +58,7 @@ public class ListActivity extends Activity {
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
 
-        adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1);
+        adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1, this);
         todoListView.setAdapter(adapter);
 
         createDialog = new Dialog(this);
@@ -95,7 +96,7 @@ public class ListActivity extends Activity {
         createDiaglogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addToList();
+                addToListRequest();
                 createDialog.dismiss();
             }
         });
@@ -130,7 +131,7 @@ public class ListActivity extends Activity {
         createDialog.show();
     }
 
-    public void addToList() {
+    public void addToListRequest() {
         String itemName = cdNameET.getText().toString();
         String itemLanguage = cdLanguageET.getText().toString();
         String itemCategory = cdCategoryET.getText().toString();
@@ -140,7 +141,6 @@ public class ListActivity extends Activity {
         String jsonBody = "["+gson.toJson(entry).toString()+"]";
         Log.d("DEBUG", "Add to list this : " + jsonBody);
 
-        // TODO
         StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -169,6 +169,46 @@ public class ListActivity extends Activity {
             }
 
         };
+        RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
+        requestQueue.add(request);
+    }
+
+    public void deleteFromListRequest(TodoEntry entry) {
+        String jsonBody = "["+gson.toJson(entry)+"]";
+        Log.d("DELETE", jsonBody);
+        StringRequest request = new HttpRequestImpl(Request.Method.DELETE, deleteUrl, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Request", "Response :" + response);
+                getList();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("On Delete Request", "Error : "+ error.toString());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return jsonBody == null ? null : jsonBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonBody, "utf-8");
+                    return null;
+                }
+            }
+
+        };
+        try {
+            Log.d("Request", new String(request.getBody()));
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
         requestQueue.add(request);
     }
