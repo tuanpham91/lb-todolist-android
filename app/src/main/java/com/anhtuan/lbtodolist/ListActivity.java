@@ -31,6 +31,7 @@ public class ListActivity extends Activity {
     private static String addUrl = baseUrl + "/todolist";
     private static String postUrl = baseUrl + "/addtodolist";
     private static String deleteUrl = baseUrl + "/deletetodolist";
+    private static String language = "Deutsch";
 
     private ArrayList<String> listItems=new ArrayList<>();
     private ListViewArrayAdapter adapter;
@@ -42,11 +43,9 @@ public class ListActivity extends Activity {
     Button closeDiaglogButton;
     Button createDiaglogButton;
 
-    // TextView for Dialog
     EditText cdNameET;
     EditText cdLanguageET;
     EditText cdCategoryET;
-    // Time makes no senses
     EditText cdAmountET;
 
     @Override
@@ -68,7 +67,6 @@ public class ListActivity extends Activity {
         closeDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_cancel_button);
         createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
         cdNameET = (EditText) createDialog.findViewById(R.id.create_dialog_et_1);
-        cdLanguageET = (EditText) createDialog.findViewById(R.id.create_dialog_et_2);
         cdCategoryET = (EditText) createDialog.findViewById(R.id.create_dialog_et_3);
         cdAmountET = (EditText) createDialog.findViewById(R.id.create_dialog_et_4);
 
@@ -133,10 +131,9 @@ public class ListActivity extends Activity {
 
     public void addToListRequest() {
         String itemName = cdNameET.getText().toString();
-        String itemLanguage = cdLanguageET.getText().toString();
         String itemCategory = cdCategoryET.getText().toString();
         Long itemAmount = Long.valueOf(cdAmountET.getText().toString());
-        TodoEntry entry = new TodoEntry(itemName, System.currentTimeMillis(), itemLanguage, itemCategory, itemAmount);
+        TodoEntry entry = new TodoEntry(itemName, System.currentTimeMillis(), language, itemCategory, itemAmount);
         //TODO :Fix this abomination
         String jsonBody = "["+gson.toJson(entry).toString()+"]";
         Log.d("DEBUG", "Add to list this : " + jsonBody);
@@ -176,7 +173,7 @@ public class ListActivity extends Activity {
     public void deleteFromListRequest(TodoEntry entry) {
         String jsonBody = "["+gson.toJson(entry)+"]";
         Log.d("DELETE", jsonBody);
-        StringRequest request = new HttpRequestImpl(Request.Method.DELETE, deleteUrl, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.POST, deleteUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
@@ -190,7 +187,7 @@ public class ListActivity extends Activity {
         }) {
             @Override
             public String getBodyContentType() {
-                return "application/json; charset=utf-8";
+                return "application/json";
             }
 
             @Override
@@ -204,18 +201,12 @@ public class ListActivity extends Activity {
             }
 
         };
-        try {
-            Log.d("Request", new String(request.getBody()));
-        } catch (AuthFailureError authFailureError) {
-            authFailureError.printStackTrace();
-        }
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
         requestQueue.add(request);
     }
 
     public void clearEditTexts() {
         cdNameET.setText("");
-        cdLanguageET.setText("");
         cdCategoryET.setText("");
         cdAmountET.setText("");
     }
