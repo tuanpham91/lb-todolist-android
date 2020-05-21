@@ -1,17 +1,30 @@
 package com.anhtuan.http;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequestImpl extends StringRequest {
-    public HttpRequestImpl(int method, String url, Response.Listener<String> listener, @Nullable Response.ErrorListener errorListener) {
-        super(method, url, listener, errorListener);
+    private String jsonBody;
+
+    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener) {
+        super(method, url, listener, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Error", error.toString());
+            }
+        });
+        this.jsonBody = jsonBody;
     }
 
     @Override
@@ -20,5 +33,20 @@ public class HttpRequestImpl extends StringRequest {
         headers.put("Authorization","Basic dHVhbjoxOTkx");
         headers.put("Content-Type","application/json");
         return headers;
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return "application/json; charset=utf-8";
+    }
+
+    @Override
+    public byte[] getBody() throws AuthFailureError {
+        try {
+            return jsonBody == null ? null : jsonBody.getBytes("utf-8");
+        } catch (UnsupportedEncodingException uee) {
+            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonBody, "utf-8");
+            return null;
+        }
     }
 }

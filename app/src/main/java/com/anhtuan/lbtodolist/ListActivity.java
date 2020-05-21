@@ -64,12 +64,14 @@ public class ListActivity extends Activity {
         createDialog.setContentView(R.layout.add_item_dialog);
         createDialog.setTitle("Add entry");
 
+        // Create Dialgog
         closeDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_cancel_button);
         createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
         cdNameET = (EditText) createDialog.findViewById(R.id.create_dialog_et_1);
         cdCategoryET = (EditText) createDialog.findViewById(R.id.create_dialog_et_3);
         cdAmountET = (EditText) createDialog.findViewById(R.id.create_dialog_et_4);
 
+        // Update Dialog
         closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,16 +103,11 @@ public class ListActivity extends Activity {
     }
 
     public void getList() {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, addUrl, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Onclick", "Respond : " + response);
                 updateList(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Onclick", "Error");
             }
         });
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
@@ -138,34 +135,13 @@ public class ListActivity extends Activity {
         String jsonBody = "["+gson.toJson(entry).toString()+"]";
         Log.d("DEBUG", "Add to list this : " + jsonBody);
 
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
                 getList();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Onclick", "Error : "+ error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                try {
-                    return jsonBody == null ? null : jsonBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonBody, "utf-8");
-                    return null;
-                }
-            }
-
-        };
+        });
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
         requestQueue.add(request);
     }
@@ -173,34 +149,13 @@ public class ListActivity extends Activity {
     public void deleteFromListRequest(TodoEntry entry) {
         String jsonBody = "["+gson.toJson(entry)+"]";
         Log.d("DELETE", jsonBody);
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, deleteUrl, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.POST, deleteUrl, jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
                 getList();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("On Delete Request", "Error : "+ error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                try {
-                    return jsonBody == null ? null : jsonBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonBody, "utf-8");
-                    return null;
-                }
-            }
-
-        };
+        });
         RequestQueue requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
         requestQueue.add(request);
     }
