@@ -28,14 +28,14 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/create_dialog_et_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:padding="5dp"
+                android:padding="7dp"
                 android:text="" />
         </LinearLayout>
 
@@ -55,11 +55,12 @@
                 android:text="Category"
                 android:textSize="16sp" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/create_dialog_et_3"
-                android:layout_width="wrap_content"
+                android:layout_width="210dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="16sp"
                 android:ems="10"
                 android:inputType="textPersonName" />
         </LinearLayout>
@@ -76,7 +77,7 @@
                 android:textStyle="bold"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="5dp"
+                android:padding="7dp"
                 android:text="Amount"
                 android:textSize="16sp" />
 

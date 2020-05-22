@@ -40,15 +40,15 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
         holder.getDeleteButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                parentActivity.deleteFromListRequest(currentEntry);
                 deleteItem(position);
+                parentActivity.deleteFromListRequest(currentEntry);
             }
         });
 
         holder.getEditButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                parentActivity.openUpdateDialog(currentEntry);
             }
         });
         return convertView;

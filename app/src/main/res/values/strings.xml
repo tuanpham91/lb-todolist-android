@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">LBTodoList</string>
+    <string-array name="category_array">
+        <item>Groceries</item>
+        <item>Other</item>
+    </string-array>
 </resources>

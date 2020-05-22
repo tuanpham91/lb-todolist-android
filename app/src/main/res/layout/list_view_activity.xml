@@ -15,7 +15,7 @@
             android:id="@+id/placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="placeholder" />
+            android:text="Refresh" />
 
         <ImageButton
             android:id="@+id/addEntryButton"
