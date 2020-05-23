@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ListActivity extends Activity {
-    // Pi : 26
+    // Pi : 26 Local : 21
     private static String baseUrl = "http://192.168.178.26:8080";
     private static String addUrl = baseUrl + "/todolist";
     private static String postUrl = baseUrl + "/addtodolist";
@@ -148,6 +148,7 @@ public class ListActivity extends Activity {
         createDiaglogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("ADD TO LIST", "this here called ");
                 addToListRequest();
                 createDialog.dismiss();
             }
@@ -222,7 +223,7 @@ public class ListActivity extends Activity {
     }
 
     public void updateItemListRequest() {
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, allItemUrl, "", new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, allItemUrl, "", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
