@@ -2,6 +2,7 @@ package com.anhtuan.lbtodolist;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,6 +23,12 @@ import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -35,6 +41,10 @@ public class ListActivity extends Activity {
     private static String updateUrl = baseUrl + "/updatetodolist";
     private static String allItemUrl = baseUrl + "/allitemlist";
     private static String language = "Deutsch";
+
+    protected static String localListFileName = "todolist-cache";
+    protected static String localAllItemsFileName= "allitems-cache";
+
 
     private ListViewArrayAdapter adapter;
     Button clickButton;
@@ -59,9 +69,39 @@ public class ListActivity extends Activity {
     RequestQueue requestQueue;
     ArrayAdapter<CharSequence> spinnerAdapter;
     ArrayAdapter<String> itemSuggestionListAdapter;
-
+    File localListFile;
+    File localAllItemsFile;
     public TodoEntry currentTodoEntry;
     ArrayList<String> allItemList;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Get TodoList Local File ()
+        localListFile = new File(this.getApplicationContext().getFilesDir(), localListFileName);
+        localAllItemsFile = new File(this.getApplicationContext().getFilesDir(), localAllItemsFileName);
+        String todoListLocal = readStringFromFile(localListFile);
+        String allItemsLocal = readStringFromFile(localAllItemsFile);
+        updateList(todoListLocal);
+        updateAllItemListFromString(allItemsLocal);
+    }
+
+    private String readStringFromFile(File file) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(file.getPath())));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private void saveStringToFile(File file, String content) {
+        try (FileOutputStream fos = this.getApplicationContext().openFileOutput(file.getName(), Context.MODE_PRIVATE)){
+            fos.write(content.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +149,6 @@ public class ListActivity extends Activity {
         udAmountET = (EditText) updateDialog.findViewById(R.id.update_dialog_et_3);
 
         udCategorySpinner.setAdapter(spinnerAdapter);
-
 
         itemSuggestionListAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, allItemList);
@@ -173,14 +212,20 @@ public class ListActivity extends Activity {
         StringRequest request = new HttpRequestImpl(Request.Method.GET, addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                cacheTodoListContent(response);
                 updateList(response);
             }
         });
         requestQueue.add(request);
     }
 
+    public void cacheTodoListContent(String content) {
+        saveStringToFile(localListFile, content);
+    }
+
     public void updateList(String response) {
         TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
+        if (entryList == null) return;
         adapter.clear();
         adapter.addAll(entryList);
         adapter.notifyDataSetChanged();
@@ -226,15 +271,15 @@ public class ListActivity extends Activity {
         StringRequest request = new HttpRequestImpl(Request.Method.GET, allItemUrl, "", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Request", "Response :" + response);
-                updateItemList(response);
+                updateAllItemListFromString(response);
             }
         });
         requestQueue.add(request);
     }
 
-    public void updateItemList(String response) {
-        allItemList = new ArrayList<String>(Arrays.asList(response.split(";")));
+    public void updateAllItemListFromString(String response) {
+        allItemList.clear();
+        allItemList.addAll(Arrays.asList(response.split(";")));
     }
 
     public void deleteFromListRequest(TodoEntry entry) {
