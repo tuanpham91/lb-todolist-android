@@ -18,13 +18,12 @@ public class DataCacher {
 
     private static String localListFileName = "todolist-cache";
     private static String localAllItemsFileName= "allitems-cache";
-    private static String basicAuth = "basicAuth-cache";
+    private static String basicAuthFileName = "basicAuth-cache";
 
     public String readStringFromFile(File file) {
         try {
             return new String(Files.readAllBytes(Paths.get(file.getPath())));
         } catch (IOException e) {
-            e.printStackTrace();
             return "";
         }
     }
@@ -46,6 +45,7 @@ public class DataCacher {
             cacher = new DataCacher(context);
             cacher.localListFile = new File(context.getFilesDir(), localListFileName);
             cacher.localAllItemsFile = new File(context.getFilesDir(), localAllItemsFileName);
+            cacher.basicAuthFile = new File(context.getFilesDir(), basicAuthFileName);
         }
         return cacher;
     }

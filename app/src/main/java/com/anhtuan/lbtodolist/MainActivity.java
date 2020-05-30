@@ -69,6 +69,7 @@ public class MainActivity extends Activity {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
+                moveToListActivity();
             }
 
         }, new Response.ErrorListener() {
@@ -76,6 +77,7 @@ public class MainActivity extends Activity {
             public void onErrorResponse(VolleyError error) {
                 // back to old activity
                 dialog.setMessage("Can not authenticate, please log in again");
+                dialog.show();
             }
         });
         requestQueue.add(request);

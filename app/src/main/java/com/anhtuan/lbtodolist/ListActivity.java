@@ -77,7 +77,6 @@ public class ListActivity extends Activity {
         setContentView(R.layout.list_view_activity);
 
         requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
-        createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
 
         clickButton = (Button) findViewById(R.id.placeholder);
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
@@ -86,10 +85,9 @@ public class ListActivity extends Activity {
         adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1, this);
         todoListView.setAdapter(adapter);
 
-        // Array Adapter for Spinner
+        // Array Adapter for
         spinnerAdapter =
                 ArrayAdapter.createFromResource(this, R.array.category_array, R.layout.spinner_item);
-        cdCategorySpinner.setAdapter(spinnerAdapter);
 
         //updateDialog
         updateDialog = new Dialog(this);
@@ -109,7 +107,6 @@ public class ListActivity extends Activity {
 
         itemSuggestionListAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, allItemList);
-        cdNameET.setAdapter(itemSuggestionListAdapter);
         udNameET.setAdapter(itemSuggestionListAdapter);
 
         applyUpdateDialogButton.setOnClickListener(new View.OnClickListener() {
@@ -131,13 +128,6 @@ public class ListActivity extends Activity {
             @Override
             public void onClick(View v) {
                 getList();
-            }
-        });
-
-        closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDialog.dismiss();
             }
         });
 
@@ -178,10 +168,15 @@ public class ListActivity extends Activity {
         createDialog.setContentView(R.layout.add_item_dialog);
         createDialog.setTitle("Add entry");
 
+        createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
         closeDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_cancel_button);
         cdNameET = (AutoCompleteTextView) createDialog.findViewById(R.id.create_dialog_et_1);
         cdCategorySpinner = (Spinner) createDialog.findViewById(R.id.create_dialog_et_3);
         cdAmountET = (EditText) createDialog.findViewById(R.id.create_dialog_et_4);
+        cdCategorySpinner.setAdapter(spinnerAdapter);
+
+        cdNameET.setAdapter(itemSuggestionListAdapter);
+
 
         closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,7 +247,7 @@ public class ListActivity extends Activity {
 
     public void deleteFromListRequest(TodoEntry entry) {
         String jsonBody = "["+gson.toJson(entry)+"]";
-        Log.d("DELETE", jsonBody);
+
         adapter.remove(entry);
         StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, new Response.Listener<String>() {
             @Override
