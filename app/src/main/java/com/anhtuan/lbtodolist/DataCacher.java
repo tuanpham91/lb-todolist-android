@@ -1,4 +1,4 @@
-package com.anhtuan.http;
+package com.anhtuan.lbtodolist;
 
 import android.content.Context;
 
@@ -14,8 +14,11 @@ public class DataCacher {
     private Context context;
     public File localListFile;
     public File localAllItemsFile;
+    public File basicAuthFile;
+
     private static String localListFileName = "todolist-cache";
     private static String localAllItemsFileName= "allitems-cache";
+    private static String basicAuth = "basicAuth-cache";
 
     public String readStringFromFile(File file) {
         try {
@@ -26,7 +29,7 @@ public class DataCacher {
         }
     }
 
-    private void saveStringToFile(File file, String content) {
+    public void saveStringToFile(File file, String content) {
         try (FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_PRIVATE)){
             fos.write(content.getBytes());
         } catch (Exception e) {

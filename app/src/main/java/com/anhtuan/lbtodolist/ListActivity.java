@@ -2,7 +2,6 @@ package com.anhtuan.lbtodolist;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,25 +17,20 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.anhtuan.custom.ListViewArrayAdapter;
-import com.anhtuan.http.DataCacher;
 import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
+import com.anhtuan.http.TodoListDAO;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.anhtuan.http.TodoListDAO.postUrl;
+
 public class ListActivity extends Activity {
     // Pi : 26 Local : 21
-    private static String baseUrl = "http://192.168.178.26:8080";
-    private static String addUrl = baseUrl + "/todolist";
-    private static String postUrl = baseUrl + "/addtodolist";
-    private static String deleteUrl = baseUrl + "/deletetodolist";
-    private static String updateUrl = baseUrl + "/updatetodolist";
-    private static String allItemUrl = baseUrl + "/allitemlist";
+
     private static String language = "Deutsch";
-
-
 
     private ListViewArrayAdapter adapter;
     Button clickButton;
@@ -64,12 +58,13 @@ public class ListActivity extends Activity {
     DataCacher cacher;
     public TodoEntry currentTodoEntry;
     ArrayList<String> allItemList;
-
+    private String basicAuth;
     @Override
     protected void onStart() {
         super.onStart();
         cacher = DataCacher.getCacher(this.getApplicationContext());
         // Get TodoList Local File ()
+        basicAuth = cacher.readStringFromFile(cacher.basicAuthFile);
         String todoListLocal = cacher.readStringFromFile(cacher.localListFile);
         String allItemsLocal = cacher.readStringFromFile(cacher.localAllItemsFile);
         updateList(todoListLocal);
@@ -84,6 +79,7 @@ public class ListActivity extends Activity {
         setContentView(R.layout.list_view_activity);
 
         requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
+        createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
 
         clickButton = (Button) findViewById(R.id.placeholder);
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
@@ -92,24 +88,12 @@ public class ListActivity extends Activity {
         adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1, this);
         todoListView.setAdapter(adapter);
 
-        createDialog = new Dialog(this);
-        createDialog.setContentView(R.layout.add_item_dialog);
-        createDialog.setTitle("Add entry");
-
-        // Create Dialog
-        closeDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_cancel_button);
-        createDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_create_button);
-        cdNameET = (AutoCompleteTextView) createDialog.findViewById(R.id.create_dialog_et_1);
-        cdCategorySpinner = (Spinner) createDialog.findViewById(R.id.create_dialog_et_3);
-        cdAmountET = (EditText) createDialog.findViewById(R.id.create_dialog_et_4);
-
         // Array Adapter for Spinner
         spinnerAdapter =
                 ArrayAdapter.createFromResource(this, R.array.category_array, R.layout.spinner_item);
         cdCategorySpinner.setAdapter(spinnerAdapter);
 
-
-        // Update Dialog
+        //updateDialog
         updateDialog = new Dialog(this);
         updateDialog.setContentView(R.layout.update_dialog);
         updateDialog.setTitle("Change Entry");
@@ -129,13 +113,6 @@ public class ListActivity extends Activity {
                 android.R.layout.simple_dropdown_item_1line, allItemList);
         cdNameET.setAdapter(itemSuggestionListAdapter);
         udNameET.setAdapter(itemSuggestionListAdapter);
-
-        closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDialog.dismiss();
-            }
-        });
 
         applyUpdateDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,15 +136,6 @@ public class ListActivity extends Activity {
             }
         });
 
-        createDiaglogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("ADD TO LIST", "this here called ");
-                addToListRequest();
-                createDialog.dismiss();
-            }
-        });
-
         closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,13 +152,13 @@ public class ListActivity extends Activity {
     }
 
     public void getList() {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, addUrl,"", new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
                 updateList(response);
             }
-        });
+        }, basicAuth);
         requestQueue.add(request);
     }
 
@@ -207,7 +175,37 @@ public class ListActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
+    public void initializeDialog () {
+        createDialog = new Dialog(this);
+        createDialog.setContentView(R.layout.add_item_dialog);
+        createDialog.setTitle("Add entry");
+
+        closeDiaglogButton = (Button) createDialog.findViewById(R.id.create_dialog_cancel_button);
+        cdNameET = (AutoCompleteTextView) createDialog.findViewById(R.id.create_dialog_et_1);
+        cdCategorySpinner = (Spinner) createDialog.findViewById(R.id.create_dialog_et_3);
+        cdAmountET = (EditText) createDialog.findViewById(R.id.create_dialog_et_4);
+
+        closeDiaglogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createDialog.dismiss();
+            }
+        });
+
+        createDiaglogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToListRequest();
+                createDialog.dismiss();
+            }
+        });
+    }
+
     public void openCreateDialog() {
+        if (createDialog == null) {
+            initializeDialog();
+        }
+
         cdAmountET.setText("1");
         cdCategorySpinner.setSelection(0);
         createDialog.show();
@@ -235,17 +233,17 @@ public class ListActivity extends Activity {
                 Log.d("Request", "Response :" + response);
                 updateAdapter();
             }
-        });
+        }, basicAuth);
         requestQueue.add(request);
     }
 
     public void updateItemListRequest() {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, allItemUrl, "", new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.allItemUrl, "", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 updateAllItemListFromString(response);
             }
-        });
+        }, basicAuth);
         requestQueue.add(request);
     }
 
@@ -258,13 +256,13 @@ public class ListActivity extends Activity {
         String jsonBody = "["+gson.toJson(entry)+"]";
         Log.d("DELETE", jsonBody);
         adapter.remove(entry);
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, deleteUrl, jsonBody, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
                 updateAdapter();
             }
-        });
+        }, basicAuth);
         requestQueue.add(request);
     }
 
@@ -272,13 +270,13 @@ public class ListActivity extends Activity {
         TodoEntry newEntry =
                 new TodoEntry(udNameET.getText().toString(), oldEntry.getDate(), oldEntry.getLanguage(), udAmountET.getText().toString(), Long.valueOf(udAmountET.getText().toString()));
         String jsonBody = "["+gson.toJson(oldEntry)+","+gson.toJson(newEntry)+"]";
-        StringRequest request  = new HttpRequestImpl(Request.Method.POST, updateUrl, jsonBody, new Response.Listener<String>() {
+        StringRequest request  = new HttpRequestImpl(Request.Method.POST, TodoListDAO.updateUrl, jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
                 getList();
             }
-        });
+        }, basicAuth);
         requestQueue.add(request);
     }
 

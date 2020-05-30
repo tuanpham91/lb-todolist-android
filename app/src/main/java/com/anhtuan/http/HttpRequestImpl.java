@@ -1,5 +1,6 @@
 package com.anhtuan.http;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -16,21 +17,32 @@ import java.util.Map;
 
 public class HttpRequestImpl extends StringRequest {
     private String jsonBody;
+    private String basicAuth = "";
 
-    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener) {
+    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, String basicAuth) {
         super(method, url, listener, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Error", error.toString());
             }
         });
+        this.basicAuth = basicAuth;
         this.jsonBody = jsonBody;
     }
 
+    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, String basicAuth, Response.ErrorListener errListener) {
+        super(method, url, listener, errListener);
+        this.basicAuth = basicAuth;
+        this.jsonBody = jsonBody;
+    }
+
+    public void setCustomErrorListener (Response.ErrorListener errListener) {
+
+    }
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization","Basic dHVhbjoxOTkx");
+        headers.put("Authorization","Basic "+ basicAuth);
         headers.put("Content-Type","application/json");
         return headers;
     }
