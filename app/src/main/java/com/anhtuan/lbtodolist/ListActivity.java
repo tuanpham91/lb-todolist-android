@@ -18,17 +18,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.anhtuan.custom.ListViewArrayAdapter;
+import com.anhtuan.http.DataCacher;
 import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -42,8 +36,6 @@ public class ListActivity extends Activity {
     private static String allItemUrl = baseUrl + "/allitemlist";
     private static String language = "Deutsch";
 
-    protected static String localListFileName = "todolist-cache";
-    protected static String localAllItemsFileName= "allitems-cache";
 
 
     private ListViewArrayAdapter adapter;
@@ -69,39 +61,22 @@ public class ListActivity extends Activity {
     RequestQueue requestQueue;
     ArrayAdapter<CharSequence> spinnerAdapter;
     ArrayAdapter<String> itemSuggestionListAdapter;
-    File localListFile;
-    File localAllItemsFile;
+    DataCacher cacher;
     public TodoEntry currentTodoEntry;
     ArrayList<String> allItemList;
 
     @Override
     protected void onStart() {
         super.onStart();
+        cacher = DataCacher.getCacher(this.getApplicationContext());
         // Get TodoList Local File ()
-        localListFile = new File(this.getApplicationContext().getFilesDir(), localListFileName);
-        localAllItemsFile = new File(this.getApplicationContext().getFilesDir(), localAllItemsFileName);
-        String todoListLocal = readStringFromFile(localListFile);
-        String allItemsLocal = readStringFromFile(localAllItemsFile);
+        String todoListLocal = cacher.readStringFromFile(cacher.localListFile);
+        String allItemsLocal = cacher.readStringFromFile(cacher.localAllItemsFile);
         updateList(todoListLocal);
         updateAllItemListFromString(allItemsLocal);
     }
 
-    private String readStringFromFile(File file) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(file.getPath())));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
 
-    private void saveStringToFile(File file, String content) {
-        try (FileOutputStream fos = this.getApplicationContext().openFileOutput(file.getName(), Context.MODE_PRIVATE)){
-            fos.write(content.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,16 +187,13 @@ public class ListActivity extends Activity {
         StringRequest request = new HttpRequestImpl(Request.Method.GET, addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                cacheTodoListContent(response);
+                cacher.cacheTodoListContent(response);
                 updateList(response);
             }
         });
         requestQueue.add(request);
     }
 
-    public void cacheTodoListContent(String content) {
-        saveStringToFile(localListFile, content);
-    }
 
     public void updateList(String response) {
         TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
