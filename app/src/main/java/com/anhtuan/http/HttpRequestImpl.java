@@ -30,7 +30,7 @@ public class HttpRequestImpl extends StringRequest {
         this.jsonBody = jsonBody;
     }
 
-    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, String basicAuth, Response.ErrorListener errListener) {
+    public HttpRequestImpl(int method, String url, String jsonBody,  String basicAuth, Response.Listener<String> listener, Response.ErrorListener errListener) {
         super(method, url, listener, errListener);
         this.basicAuth = basicAuth;
         this.jsonBody = jsonBody;

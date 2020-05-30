@@ -71,8 +71,6 @@ public class ListActivity extends Activity {
         updateAllItemListFromString(allItemsLocal);
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
