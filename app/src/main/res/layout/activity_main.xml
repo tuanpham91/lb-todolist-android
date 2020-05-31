@@ -5,9 +5,25 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BDA8A8"
+    android:background="#87BFC5"
     android:orientation="vertical"
+    android:layout_gravity="bottom"
     tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="500px">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Your own To-do List !"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <TableLayout
         android:id="@+id/l_a_login_table"
@@ -24,7 +40,7 @@
                 android:id="@+id/l_a_login_account_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
                 android:text="Account"
                 android:textSize="16sp"
                 android:textStyle="bold"

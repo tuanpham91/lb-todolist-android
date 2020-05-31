@@ -28,9 +28,14 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        cacher = DataCacher.getCacher(this.getApplicationContext());
+
+        if (!cacher.readStringFromFile(cacher.localListFile).isEmpty()) {
+            moveToListActivity();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cacher = DataCacher.getCacher(this.getApplicationContext());
         requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
 
         loginButton = (Button) findViewById(R.id.l_a_login_button);

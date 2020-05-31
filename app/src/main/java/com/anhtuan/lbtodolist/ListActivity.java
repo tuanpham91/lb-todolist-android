@@ -30,6 +30,9 @@ import static com.anhtuan.http.TodoListDAO.postUrl;
 public class ListActivity extends Activity {
     // Pi : 26 Local : 21
 
+    // TODO : WHat happens with losing internet connection ?
+    // TODO : How to avoid logging everytime ?
+
     private static String language = "Deutsch";
 
     private ListViewArrayAdapter adapter;
@@ -40,14 +43,11 @@ public class ListActivity extends Activity {
     Gson gson = new Gson();
     Button closeDiaglogButton;
     Button createDiaglogButton;
-
     AutoCompleteTextView cdNameET;
     Spinner cdCategorySpinner;
     EditText cdAmountET;
-
     Button closeUpdateDialogButton;
     Button applyUpdateDialogButton;
-
     AutoCompleteTextView udNameET;
     Spinner udCategorySpinner;
     EditText udAmountET;
@@ -95,7 +95,6 @@ public class ListActivity extends Activity {
         updateDialog.setTitle("Change Entry");
 
         allItemList = new ArrayList<>();
-        updateItemListRequest();
 
         closeUpdateDialogButton = (Button) updateDialog.findViewById(R.id.update_dialog_cancel_button);
         applyUpdateDialogButton = (Button) updateDialog.findViewById(R.id.update_dialog_update_button);
@@ -192,13 +191,18 @@ public class ListActivity extends Activity {
                 createDialog.dismiss();
             }
         });
+
+        updateItemListRequest();
     }
 
+    @Override
+    public void onBackPressed() { }
+    
     public void openCreateDialog() {
         if (createDialog == null) {
             initializeDialog();
         }
-
+        cdNameET.setText("");
         cdAmountET.setText("1");
         cdCategorySpinner.setSelection(0);
         createDialog.show();
@@ -227,6 +231,7 @@ public class ListActivity extends Activity {
                 updateAdapter();
             }
         }, basicAuth);
+
         requestQueue.add(request);
     }
 
@@ -241,13 +246,17 @@ public class ListActivity extends Activity {
     }
 
     public void updateAllItemListFromString(String response) {
+        Log.d("UPDATE", "updateItemListFromString was called");
+
         allItemList.clear();
         allItemList.addAll(Arrays.asList(response.split(";")));
+        itemSuggestionListAdapter.clear();
+        itemSuggestionListAdapter.addAll(allItemList);
+        itemSuggestionListAdapter.notifyDataSetChanged();
     }
 
     public void deleteFromListRequest(TodoEntry entry) {
         String jsonBody = "["+gson.toJson(entry)+"]";
-
         adapter.remove(entry);
         StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, new Response.Listener<String>() {
             @Override
