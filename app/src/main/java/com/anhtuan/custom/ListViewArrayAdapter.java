@@ -41,7 +41,7 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
             @Override
             public void onClick(View v) {
                 deleteItem(position);
-                parentActivity.deleteFromListRequest(currentEntry);
+                parentActivity.deleteFromListRequestDAO(currentEntry);
             }
         });
 
