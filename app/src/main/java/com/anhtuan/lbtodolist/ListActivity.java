@@ -70,10 +70,12 @@ public class ListActivity extends Activity {
     }
 
     private void handleUnauthorized() {
+
+        Intent moveToMainActivity = new Intent(this, MainActivity.class);
+        moveToMainActivity.putExtra("Intention", "Error");
+        startActivity(moveToMainActivity);
         Toast unauthorizedToast = Toast.makeText(ListActivity.this, "Unauthorized. Login again", Toast.LENGTH_LONG);
         unauthorizedToast.show();
-        Intent moveToMainActivity = new Intent(this, MainActivity.class);
-        startActivity(moveToMainActivity);
     }
 
     @Override

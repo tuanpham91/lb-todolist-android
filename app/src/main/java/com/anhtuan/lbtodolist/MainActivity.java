@@ -28,9 +28,11 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        cacher = DataCacher.getCacher(this.getApplicationContext());
+        Intent i = getIntent();
 
-        if (!cacher.readStringFromFile(cacher.localListFile).isEmpty()) {
+        cacher = DataCacher.getCacher(this.getApplicationContext());
+        Bundle extras = i.getExtras();
+        if (!cacher.readStringFromFile(cacher.localListFile).isEmpty() && extras == null){
             moveToListActivity();
         }
 
