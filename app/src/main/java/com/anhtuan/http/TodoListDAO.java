@@ -1,13 +1,10 @@
 package com.anhtuan.http;
 
 import android.content.Context;
-import android.util.Log;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
-import com.anhtuan.pojo.TodoEntry;
 
 public class TodoListDAO {
     public static String baseUrl = "http://192.168.178.26:8080";
@@ -35,27 +32,27 @@ public class TodoListDAO {
         return requestQueue;
     }
 
-    public void getList(Response.Listener repsonseListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl, "", repsonseListener, auth);
+    public void getList(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth) {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl, "", repsonseListener, errorListener, auth);
         requestQueue.add(request);
     }
 
-    public void addToListRequest(String jsonBody, Response.Listener responseListner, String auth) {
+    public void addToListRequest(String jsonBody, Response.Listener responseListner, Response.ErrorListener errorListener, String auth) {
         StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, jsonBody, responseListner, auth);
         requestQueue.add(request);
     }
 
-    public void updateItemListRequest(Response.Listener responseListener, String auth) {
+    public void updateItemListRequest(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
         StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.allItemUrl, "", responseListener, auth);
         requestQueue.add(request);
     }
 
-    public void deleteFromListRequest(String jsonBody, Response.Listener responseListener, String auth) {
+    public void deleteFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
         StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, responseListener, auth);
         requestQueue.add(request);
     }
 
-    public void updateItemFromListRequest(String jsonBody, Response.Listener responseListener, String auth) {
+    public void updateItemFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
         StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.updateUrl, jsonBody, responseListener, auth);
         requestQueue.add(request);
     }

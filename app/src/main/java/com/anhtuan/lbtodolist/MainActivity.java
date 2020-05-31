@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
     }
 
     public void getListAndCache(String authString) {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", authString, new Response.Listener<String>() {
+        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
                 dialog.setMessage("Can not authenticate, please log in again");
                 dialog.show();
             }
-        });
+        }, authString);
         requestQueue.add(request);
     }
 

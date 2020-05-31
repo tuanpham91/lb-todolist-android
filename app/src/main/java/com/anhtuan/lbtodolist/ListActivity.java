@@ -1,6 +1,7 @@
 package com.anhtuan.lbtodolist;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,7 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.anhtuan.custom.ChangeItemDialog;
 import com.anhtuan.custom.ListViewArrayAdapter;
 import com.anhtuan.custom.UpdateItemDialog;
@@ -38,7 +42,7 @@ public class ListActivity extends Activity {
     ArrayAdapter<CharSequence> spinnerAdapter;
     ArrayAdapter<String> itemSuggestionListAdapter;
     DataCacher cacher;
-
+    Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
     ArrayList<String> allItemList;
     private String basicAuth;
@@ -49,11 +53,27 @@ public class ListActivity extends Activity {
         cacher = DataCacher.getCacher(this.getApplicationContext());
         // Get TodoList Local File ()
         basicAuth = cacher.readStringFromFile(cacher.basicAuthFile);
-        Log.d("BASIC AUTH", basicAuth);
+        requestErrorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse.statusCode == 401) {
+                    handleUnauthorized();
+                    //TODO : For another errors like no network found or smth
+                }
+            }
+        };
+
         String todoListLocal = cacher.readStringFromFile(cacher.localListFile);
         String allItemsLocal = cacher.readStringFromFile(cacher.localAllItemsFile);
         updateList(todoListLocal);
         updateAllItemListFromString(allItemsLocal);
+    }
+
+    private void handleUnauthorized() {
+        Toast unauthorizedToast = Toast.makeText(ListActivity.this, "Unauthorized. Login again", Toast.LENGTH_LONG);
+        unauthorizedToast.show();
+        Intent moveToMainActivity = new Intent(this, MainActivity.class);
+        startActivity(moveToMainActivity);
     }
 
     @Override
@@ -74,7 +94,6 @@ public class ListActivity extends Activity {
                 ArrayAdapter.createFromResource(this, R.array.category_array, R.layout.spinner_item);
 
         //updateDialog
-
         allItemList = new ArrayList<>();
         itemSuggestionListAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, allItemList);
@@ -117,7 +136,7 @@ public class ListActivity extends Activity {
                 cacher.cacheTodoListContent(response);
                 updateList(response);
             }
-        }, auth);
+        }, requestErrorListener, auth);
     }
 
 
@@ -179,7 +198,7 @@ public class ListActivity extends Activity {
                 Log.d("Request", "Response :" + response);
                 updateAdapter();
             }
-        }, basicAuth);
+        }, requestErrorListener, basicAuth);
     }
 
     public void updateItemListRequestDAO() {
@@ -188,7 +207,7 @@ public class ListActivity extends Activity {
             public void onResponse(String response) {
                 updateAllItemListFromString(response);
             }
-        }, basicAuth);
+        }, requestErrorListener, basicAuth);
     }
 
     public void updateAllItemListFromString(String response) {
@@ -207,7 +226,7 @@ public class ListActivity extends Activity {
             public void onResponse(String response) {
                 updateAdapter();
             }
-        }, basicAuth);
+        }, requestErrorListener, basicAuth);
     }
 
     public void updateItemFromListRequestDAO(TodoEntry oldEntry) {
@@ -223,6 +242,6 @@ public class ListActivity extends Activity {
             public void onResponse(String response) {
                 getListDAO(basicAuth);
             }
-        }, basicAuth);
+        }, requestErrorListener, basicAuth);
     }
 }

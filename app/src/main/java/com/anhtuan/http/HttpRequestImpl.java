@@ -30,15 +30,12 @@ public class HttpRequestImpl extends StringRequest {
         this.jsonBody = jsonBody;
     }
 
-    public HttpRequestImpl(int method, String url, String jsonBody,  String basicAuth, Response.Listener<String> listener, Response.ErrorListener errListener) {
+    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, Response.ErrorListener errListener, String basicAuth) {
         super(method, url, listener, errListener);
         this.basicAuth = basicAuth;
         this.jsonBody = jsonBody;
     }
 
-    public void setCustomErrorListener (Response.ErrorListener errListener) {
-
-    }
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<String, String>();
