@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
     EditText passwordEditText;
     AlertDialog dialog;
     DataCacher cacher;
-    RequestQueue requestQueue;
+    RequestQueueProvider requestQueueProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestQueue = RequestQueueProvider.getRequestQueue(this.getApplicationContext());
+        requestQueueProvider = RequestQueueProvider.getRequestQueueProvider(this.getApplicationContext());
 
         loginButton = (Button) findViewById(R.id.l_a_login_button);
         accountEditText = (EditText) findViewById(R.id.l_a_account_name);
@@ -59,7 +59,6 @@ public class MainActivity extends Activity {
         String id=  accountEditText.getText().toString();
         String password = passwordEditText.getText().toString();
         String authString = new String(Base64.getEncoder().encode((id+":"+password).getBytes()));
-        Log.d("DEBUG", authString);
         cacher.saveStringToFile(cacher.basicAuthFile, authString);
 
         if (accountEditText.getText().toString().length() == 0 || passwordEditText.getText().toString().length()==0) {
@@ -87,7 +86,7 @@ public class MainActivity extends Activity {
                 dialog.show();
             }
         }, authString);
-        requestQueue.add(request);
+        requestQueueProvider.addToQueue(request);
     }
 
     private void moveToListActivity() {
