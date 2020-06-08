@@ -1,12 +1,11 @@
 package com.anhtuan.http;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;

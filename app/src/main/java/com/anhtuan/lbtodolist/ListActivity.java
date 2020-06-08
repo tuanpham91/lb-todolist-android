@@ -27,9 +27,7 @@ public class ListActivity extends Activity {
 
     // TODO : WHat happens with losing internet connection ?
     // TODO : How to avoid logging everytime ?
-
     private static String language = "Deutsch";
-
     private ListViewArrayAdapter adapter;
     Button clickButton;
     ImageButton addButton;
@@ -56,11 +54,15 @@ public class ListActivity extends Activity {
         requestErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse == null) {
+                    Log.d("Debug-NoInternet", error.getLocalizedMessage());
+                    return;
+                }
                 if (error.networkResponse.statusCode == 401) {
                     handleUnauthorized();
-                    //TODO : For another errors like no network found or smth
                 }
             }
+
         };
 
         String todoListLocal = cacher.readStringFromFile(cacher.localListFile);
@@ -198,6 +200,7 @@ public class ListActivity extends Activity {
             @Override
             public void onResponse(String response) {
                 Log.d("Request", "Response :" + response);
+                getListDAO(basicAuth);
                 updateAdapter();
             }
         }, requestErrorListener, basicAuth);
