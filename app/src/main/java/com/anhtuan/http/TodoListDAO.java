@@ -28,27 +28,27 @@ public class TodoListDAO {
     }
 
     public void getList(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl, "", repsonseListener, errorListener, auth);
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl, "", repsonseListener, errorListener, auth);
         requestQueueProvider.addToQueue(request);
     }
 
     public void addToListRequest(String jsonBody, Response.Listener responseListner, Response.ErrorListener errorListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, postUrl, jsonBody, responseListner, errorListener, auth);
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.POST, postUrl, jsonBody, responseListner, errorListener, auth);
         requestQueueProvider.addToQueue(request);
     }
 
     public void updateItemListRequest(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.allItemUrl, "", responseListener, errorListener, auth);
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.allItemUrl, "", responseListener, errorListener, auth);
         requestQueueProvider.addToQueue(request);
     }
 
     public void deleteFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, responseListener, errorListener, auth);
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.deleteUrl, jsonBody, responseListener, errorListener, auth);
         requestQueueProvider.addToQueue(request);
     }
 
     public void updateItemFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        StringRequest request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.updateUrl, jsonBody, responseListener, errorListener,  auth);
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.POST, TodoListDAO.updateUrl, jsonBody, responseListener, errorListener,  auth);
         requestQueueProvider.addToQueue(request);
     }
 

@@ -1,6 +1,7 @@
 package com.anhtuan.custom;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,18 @@ import com.anhtuan.lbtodolist.ListActivity;
 import com.anhtuan.lbtodolist.R;
 import com.anhtuan.pojo.TodoEntry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 // TODO : https://stackoverflow.com/questions/11281952/listview-with-customized-row-layout-android
 public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
 
     private ListActivity parentActivity;
+    private ArrayList<TodoEntry> itemList;
 
     public ListViewArrayAdapter(@NonNull Context context, int resource, ListActivity parentActivity) {
         super(context, resource);
+        this.itemList = new ArrayList<>();
         this.parentActivity=parentActivity;
     }
 
@@ -52,6 +58,39 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
             }
         });
         return convertView;
+    }
+
+    @Override
+    public void add(TodoEntry entry) {
+        itemList.add(entry);
+        super.add(entry);
+    }
+
+    @Override
+    public void remove(TodoEntry entry) {
+        itemList.remove(entry);
+        super.remove(entry);
+    }
+    @Override
+    public void clear() {
+        itemList.clear();
+        super.clear();
+    }
+
+    @Override
+    public void addAll(TodoEntry... items) {
+        itemList.addAll(Arrays.asList(items));
+        super.addAll(items);
+    }
+
+    public int findEntry(TodoEntry entry) {
+        for (int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i).getValue().equals(entry.getValue())) {
+                Log.d("DEBUG", "found index " + i + " of size " + itemList.size());
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void deleteItem(int position) {

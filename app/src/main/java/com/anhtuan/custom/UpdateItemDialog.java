@@ -8,9 +8,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-
-import androidx.annotation.NonNull;
-
 import com.anhtuan.lbtodolist.R;
 // Deprecated
 public class UpdateItemDialog extends Dialog {

@@ -28,7 +28,7 @@ public class ListActivity extends Activity {
     // TODO : WHat happens with losing internet connection ?
     // TODO : How to avoid logging everytime ?
     private static String language = "Deutsch";
-    private ListViewArrayAdapter adapter;
+    private ListViewArrayAdapter listViewArrayAdapter;
     Button clickButton;
     ImageButton addButton;
     ListView todoListView;
@@ -90,8 +90,8 @@ public class ListActivity extends Activity {
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
 
-        adapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1, this);
-        todoListView.setAdapter(adapter);
+        listViewArrayAdapter = new ListViewArrayAdapter(this.getApplicationContext(), android.R.layout.simple_list_item_1, this);
+        todoListView.setAdapter(listViewArrayAdapter);
 
         // Array Adapter for
         spinnerAdapter =
@@ -112,7 +112,7 @@ public class ListActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        updateItemFromListRequestDAO(currentTodoEntry);
+                        updateItemFromList(currentTodoEntry);
                         updateDialog.dismiss();
                     }
                 });
@@ -147,13 +147,13 @@ public class ListActivity extends Activity {
     public void updateList(String response) {
         TodoEntry[] entryList = gson.fromJson(response, TodoEntry[].class);
         if (entryList == null) return;
-        adapter.clear();
-        adapter.addAll(entryList);
-        adapter.notifyDataSetChanged();
+        listViewArrayAdapter.clear();
+        listViewArrayAdapter.addAll(entryList);
+        listViewArrayAdapter.notifyDataSetChanged();
     }
 
     public void updateAdapter() {
-        adapter.notifyDataSetChanged();
+        listViewArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -193,9 +193,18 @@ public class ListActivity extends Activity {
         Long itemAmount = Long.valueOf(createDialog.getCdAmountET().getText().toString());
         TodoEntry entry = new TodoEntry(itemName, System.currentTimeMillis(), language, itemCategory, itemAmount);
 
-        //TODO :Fix this abomination
+        int index = listViewArrayAdapter.findEntry(entry);
+        if ( index >= 0) {
+            TodoEntry oldEntry = listViewArrayAdapter.getItem(index);
+            entry.setAmount(entry.getAmount() + oldEntry.getAmount());
+            updateItemFromListRequestDAO(oldEntry, entry );
+            Toast alreadyExistToast = Toast.makeText(ListActivity.this, "Item already exists, merged amount..", Toast.LENGTH_LONG);
+            alreadyExistToast.show();
+            return;
+        }
+        // good enough for now
         String jsonBody = "["+gson.toJson(entry)+"]";
-        adapter.add(entry);
+        listViewArrayAdapter.add(entry);
         todoListDAO.addToListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -225,7 +234,7 @@ public class ListActivity extends Activity {
 
     public void deleteFromListRequestDAO(TodoEntry entry) {
         String jsonBody = "["+gson.toJson(entry)+"]";
-        adapter.remove(entry);
+        listViewArrayAdapter.remove(entry);
         todoListDAO.deleteFromListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -234,13 +243,16 @@ public class ListActivity extends Activity {
         }, requestErrorListener, basicAuth);
     }
 
-    public void updateItemFromListRequestDAO(TodoEntry oldEntry) {
+    public void updateItemFromList(TodoEntry oldEntry) {
         TodoEntry newEntry =
                 new TodoEntry(updateDialog.getUdNameET().getText().toString(),
                         oldEntry.getDate(), oldEntry.getLanguage(),
                         updateDialog.getUdAmountET().getText().toString(),
                         Long.valueOf(updateDialog.getUdAmountET().getText().toString()));
+        updateItemFromListRequestDAO(oldEntry, newEntry);
+    }
 
+    public void updateItemFromListRequestDAO(TodoEntry oldEntry, TodoEntry newEntry) {
         String jsonBody = "["+gson.toJson(oldEntry)+","+gson.toJson(newEntry)+"]";
         todoListDAO.updateItemFromListRequest(jsonBody, new Response.Listener<String>() {
             @Override

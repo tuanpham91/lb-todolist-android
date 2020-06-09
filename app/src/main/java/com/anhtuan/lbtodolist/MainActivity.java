@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
     }
 
     public void getListAndCache(String authString) {
-        StringRequest request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", new Response.Listener<String>() {
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);

@@ -31,7 +31,7 @@ public class RequestQueueProvider {
         return queueProvider;
     }
 
-    public void addToQueue(Request request) {
+    public void addToQueue(HttpRequestImpl request) {
         impendingRequests.add(request);
         if (isNetworkAvailable()) {
             while (isNetworkAvailable() && !impendingRequests.isEmpty()) {
@@ -41,7 +41,6 @@ public class RequestQueueProvider {
             }
         } else {
             Log.d("Late Request Service", "No Internet! Adding Request to Queue : " + request);
-
         }
     }
 
