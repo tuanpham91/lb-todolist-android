@@ -17,7 +17,6 @@ public class ChangeItemDialog extends Dialog{
     private Button createDiaglogButton;
     private AutoCompleteTextView cdNameET;
     private Spinner cdCategorySpinner;
-
     private EditText cdAmountET;
     private ArrayAdapter<String> itemSuggestionListAdapter;
     private ArrayAdapter<CharSequence> spinnerAdapter;

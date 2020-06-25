@@ -1,7 +1,6 @@
 package com.anhtuan.lbtodolist;
 
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.android.volley.Response;
 import com.anhtuan.custom.ChangeItemDialog;
@@ -154,10 +153,6 @@ public class ListActivityDataHolder {
         return cacher;
     }
 
-    public ArrayAdapter<String> getItemSuggestionListAdapter() {
-        return itemSuggestionListAdapter;
-    }
-
     public ListViewArrayAdapter getListViewArrayAdapter() {
         return listViewArrayAdapter;
     }
@@ -174,7 +169,4 @@ public class ListActivityDataHolder {
         this.basicAuth = basicAuth;
     }
 
-    public ArrayList<String> getAllItemList() {
-        return allItemList;
-    }
 }

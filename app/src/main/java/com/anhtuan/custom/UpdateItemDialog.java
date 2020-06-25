@@ -8,7 +8,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.anhtuan.global.dataholder.AllItemListDataHolder;
 import com.anhtuan.lbtodolist.R;
+import com.anhtuan.pojo.TodoEntry;
 // Deprecated
 
 public class UpdateItemDialog extends Dialog {
@@ -18,9 +21,10 @@ public class UpdateItemDialog extends Dialog {
     private Spinner udCategorySpinner;
     private EditText udAmountET;
     private ArrayAdapter<CharSequence> spinnerAdapter;
+    private ArrayAdapter<String> itemSuggestionListAdapter;
+
 
     public UpdateItemDialog(Context context,
-                            ArrayAdapter<String> itemSuggestionListAdapter,
                             View.OnClickListener closeDialogListener,
                             View.OnClickListener updateButtonDialogListener)
     {
@@ -33,13 +37,24 @@ public class UpdateItemDialog extends Dialog {
         udNameET = (AutoCompleteTextView) this.findViewById(R.id.update_dialog_et_1);
         udCategorySpinner = (Spinner) this.findViewById(R.id.update_dialog_et_2);
         udAmountET = (EditText) this.findViewById(R.id.update_dialog_et_3);
+        spinnerAdapter = ArrayAdapter.createFromResource(context, R.array.category_array, R.layout.spinner_item);
 
-        udNameET.setAdapter(itemSuggestionListAdapter);
         udCategorySpinner.setAdapter(spinnerAdapter);
+
+        itemSuggestionListAdapter =  new ArrayAdapter<String>(context,
+                android.R.layout.simple_dropdown_item_1line, AllItemListDataHolder.getAllUniqueItemList());
+        udNameET.setAdapter(itemSuggestionListAdapter);
 
         closeUpdateDialogButton.setOnClickListener(closeDialogListener);
         applyUpdateDialogButton.setOnClickListener(updateButtonDialogListener);
 
+    }
+
+    public void showEntry(TodoEntry entry) {
+        udNameET.setText(entry.getValue());
+        udAmountET.setText(entry.getAmount().toString());
+        udCategorySpinner.setSelection(spinnerAdapter.getPosition(entry.getKeywordCategory()));
+        show();
     }
 
     public Button getApplyUpdateDialogButton() {

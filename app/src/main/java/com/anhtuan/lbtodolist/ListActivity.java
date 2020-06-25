@@ -75,7 +75,7 @@ public class ListActivity extends Activity {
         todoListView = (ListView) findViewById(R.id.todoList);
         todoListView.setAdapter(lADH.getListViewArrayAdapter());
 
-        updateDialog = new UpdateItemDialog(ListActivity.this, lADH.getItemSuggestionListAdapter(),
+        updateDialog = new UpdateItemDialog(ListActivity.this,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -131,12 +131,7 @@ public class ListActivity extends Activity {
 
     public void openUpdateDialog(TodoEntry currentEntry) {
         this.currentTodoEntry = currentEntry;
-        // TODO : put this to UpdateDiaglog
-        updateDialog.getUdNameET().setText(currentEntry.getValue());
-        updateDialog.getUdAmountET().setText(currentEntry.getAmount().toString());
-        updateDialog.getUdCategorySpinner().setSelection(lADH.getSpinnerAdapter().getPosition(currentEntry.getKeywordCategory()));
-        updateDialog.show();
+        updateDialog.showEntry(currentEntry);
     }
-
 
 }
