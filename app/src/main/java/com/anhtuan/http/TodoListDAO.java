@@ -3,15 +3,15 @@ package com.anhtuan.http;
 import android.content.Context;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.StringRequest;
 
 public class TodoListDAO {
     public static String baseUrl = "http://192.168.178.26:8080";
-    public static String addUrl = baseUrl + "/todolist";
-    public static String postUrl = baseUrl + "/addtodolist";
-    public static String deleteUrl = baseUrl + "/deletetodolist";
-    public static String updateUrl = baseUrl + "/updatetodolist";
-    public static String allItemUrl = baseUrl + "/allitemlist";
+    public static String addUrl = baseUrl + "/todolist/todolist";
+    public static String postUrl = baseUrl + "/todolist/addtodolist";
+    public static String deleteUrl = baseUrl + "/todolist/deletetodolist";
+    public static String updateUrl = baseUrl + "/todolist/updatetodolist";
+    public static String allItemUrl = baseUrl + "/todolist/allitemlist";
+    public static String authentication = baseUrl+ "/group/authenticateUser";
 
     private static TodoListDAO todoListDAO;
     private RequestQueueProvider requestQueueProvider;
@@ -25,6 +25,11 @@ public class TodoListDAO {
             todoListDAO = new TodoListDAO(RequestQueueProvider.getRequestQueueProvider(context));
         }
         return todoListDAO;
+    }
+
+    public void getUser(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
+        HttpRequestImpl request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.authentication, "", responseListener, errorListener, auth);
+        requestQueueProvider.addToQueue(request);
     }
 
     public void getList(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth) {

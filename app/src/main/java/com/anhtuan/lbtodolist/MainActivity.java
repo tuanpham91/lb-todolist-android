@@ -12,7 +12,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.http.TodoListDAO;
@@ -26,26 +25,15 @@ public class MainActivity extends Activity {
     DataCacher cacher;
     RequestQueueProvider requestQueueProvider;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Intent i = getIntent();
-
-        cacher = DataCacher.getCacher(this.getApplicationContext());
-        Bundle extras = i.getExtras();
-        if (!cacher.readStringFromFile(cacher.localListFile).isEmpty() && extras == null){
-            moveToListActivity();
-        }
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        requestQueueProvider = RequestQueueProvider.getRequestQueueProvider(this.getApplicationContext());
-
+    public MainActivity() {
+        super();
         loginButton = (Button) findViewById(R.id.l_a_login_button);
         accountEditText = (EditText) findViewById(R.id.l_a_account_name);
         dialog = new AlertDialog.Builder(this)
                 .setTitle("Warning")
                 .setCancelable(true).create();
         passwordEditText = (EditText) findViewById(R.id.l_a_password);
+        requestQueueProvider = RequestQueueProvider.getRequestQueueProvider(this.getApplicationContext());
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +41,22 @@ public class MainActivity extends Activity {
                 login();
             }
         });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Intent i = getIntent();
+        cacher = DataCacher.getCacher(this.getApplicationContext());
+        Bundle extras = i.getExtras();
+
+        if (!cacher.readStringFromFile(cacher.localListFile).isEmpty() && extras == null){
+            moveToListActivity();
+        }
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
     }
 
     protected void login() {
@@ -71,22 +75,24 @@ public class MainActivity extends Activity {
     }
 
     public void getListAndCache(String authString) {
-        HttpRequestImpl request = new HttpRequestImpl(Request.Method.GET, TodoListDAO.addUrl,"", new Response.Listener<String>() {
+        //TODO : Authenticate first
+        Response.Listener responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
                 moveToListActivity();
             }
+        };
 
-        }, new Response.ErrorListener() {
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // back to old activity
                 dialog.setMessage("Can not authenticate, please log in again");
                 dialog.show();
             }
-        }, authString);
-        requestQueueProvider.addToQueue(request);
+        };
+        TodoListDAO.getInstance(this.getApplicationContext()).getList(responseListener, errorListener, authString);
     }
 
     private void moveToListActivity() {

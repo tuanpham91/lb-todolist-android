@@ -15,10 +15,12 @@ public class DataCacher {
     public File localListFile;
     public File localAllItemsFile;
     public File basicAuthFile;
+    public File userInfo;
 
     private static String localListFileName = "todolist-cache";
     private static String localAllItemsFileName= "allitems-cache";
     private static String basicAuthFileName = "basicAuth-cache";
+    private static String userInfoFileName = "userInfo-cache";
 
     public String readStringFromFile(File file) {
         try {

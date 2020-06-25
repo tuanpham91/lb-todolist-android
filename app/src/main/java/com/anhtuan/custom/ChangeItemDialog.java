@@ -8,25 +8,26 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-
+import com.anhtuan.global.dataholder.AllItemListDataHolder;
 import com.anhtuan.lbtodolist.R;
 
 public class ChangeItemDialog extends Dialog{
+
     private Button closeDiaglogButton;
     private Button createDiaglogButton;
     private AutoCompleteTextView cdNameET;
     private Spinner cdCategorySpinner;
+
     private EditText cdAmountET;
+    private ArrayAdapter<String> itemSuggestionListAdapter;
+    private ArrayAdapter<CharSequence> spinnerAdapter;
 
     public ChangeItemDialog(String titel,
                             Context context,
-                            ArrayAdapter<CharSequence> spinnerAdapter,
-                            ArrayAdapter<String> itemSuggestionListAdapter,
                             View.OnClickListener closeDialogListener,
                             View.OnClickListener applyDialogListener)
     {
         super(context);
-
         this.setContentView(R.layout.add_item_dialog);
         this.setCustomTitle(titel);
         createDiaglogButton = (Button) this.findViewById(R.id.create_dialog_create_button);
@@ -34,8 +35,10 @@ public class ChangeItemDialog extends Dialog{
         cdNameET = (AutoCompleteTextView) this.findViewById(R.id.create_dialog_et_1);
         cdCategorySpinner = (Spinner) this.findViewById(R.id.create_dialog_et_3);
         cdAmountET = (EditText) this.findViewById(R.id.create_dialog_et_4);
-
+        spinnerAdapter = ArrayAdapter.createFromResource(context, R.array.category_array, R.layout.spinner_item);
         cdCategorySpinner.setAdapter(spinnerAdapter);
+        itemSuggestionListAdapter =  new ArrayAdapter<String>(context,
+                android.R.layout.simple_dropdown_item_1line, AllItemListDataHolder.getAllUniqueItemList());
         cdNameET.setAdapter(itemSuggestionListAdapter);
 
         closeDiaglogButton.setOnClickListener(closeDialogListener);

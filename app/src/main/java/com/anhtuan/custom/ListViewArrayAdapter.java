@@ -1,14 +1,10 @@
 package com.anhtuan.custom;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-
-import androidx.annotation.NonNull;
-
 import com.anhtuan.lbtodolist.ListActivity;
 import com.anhtuan.lbtodolist.R;
 import com.anhtuan.pojo.TodoEntry;
@@ -16,21 +12,20 @@ import com.anhtuan.pojo.TodoEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-// TODO : https://stackoverflow.com/questions/11281952/listview-with-customized-row-layout-android
 public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
 
     private ListActivity parentActivity;
     private ArrayList<TodoEntry> itemList;
 
-    public ListViewArrayAdapter(@NonNull Context context, int resource, ListActivity parentActivity) {
-        super(context, resource);
+    public ListViewArrayAdapter(int resource, ListActivity parentActivity) {
+        super(parentActivity.getApplicationContext(), resource);
         this.itemList = new ArrayList<>();
         this.parentActivity=parentActivity;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        RowListViewHolder holder = null;
+        RowListViewHolder holder;
         LayoutInflater inflater = LayoutInflater.from(this.getContext());
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.todolist_entry, parent, false);
@@ -47,7 +42,7 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
             @Override
             public void onClick(View v) {
                 deleteItem(position);
-                parentActivity.deleteFromListRequestDAO(currentEntry);
+                parentActivity.getlADH().deleteFromListRequestDAO(currentEntry);
             }
         });
 

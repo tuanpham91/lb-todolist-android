@@ -10,15 +10,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import com.anhtuan.lbtodolist.R;
 // Deprecated
+
 public class UpdateItemDialog extends Dialog {
     private Button closeUpdateDialogButton;
     private Button applyUpdateDialogButton;
     private AutoCompleteTextView udNameET;
     private Spinner udCategorySpinner;
     private EditText udAmountET;
+    private ArrayAdapter<CharSequence> spinnerAdapter;
 
     public UpdateItemDialog(Context context,
-                            ArrayAdapter<CharSequence> spinnerAdapter,
                             ArrayAdapter<String> itemSuggestionListAdapter,
                             View.OnClickListener closeDialogListener,
                             View.OnClickListener updateButtonDialogListener)
