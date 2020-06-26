@@ -11,19 +11,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.anhtuan.custom.ChangeItemDialog;
-import com.anhtuan.custom.UpdateItemDialog;
+import com.anhtuan.custom.ModifyItemDialog;
 import com.anhtuan.pojo.TodoEntry;
 
 public class ListActivity extends Activity {
     // Pi : 26 Local : 21
-
     public static String LANGUAGE = "Deutsch";
     Button clickButton;
     ImageButton addButton;
     ListView todoListView;
-    ChangeItemDialog createDialog;
-    UpdateItemDialog updateDialog;
+    ModifyItemDialog createDialog;
+    ModifyItemDialog updateDialog;
 
     Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
@@ -75,7 +73,7 @@ public class ListActivity extends Activity {
         todoListView = (ListView) findViewById(R.id.todoList);
         todoListView.setAdapter(lADH.getListViewArrayAdapter());
 
-        updateDialog = new UpdateItemDialog(ListActivity.this,
+        updateDialog = new ModifyItemDialog(this.getApplicationContext(), "Update Item",
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -111,7 +109,7 @@ public class ListActivity extends Activity {
 
     public void openCreateDialog() {
         if (createDialog == null) {
-            createDialog = new ChangeItemDialog("Add Entry", ListActivity.this,  new View.OnClickListener() {
+            createDialog = new ModifyItemDialog(this.getApplicationContext(), "Add Entry", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     createDialog.dismiss();
@@ -131,7 +129,7 @@ public class ListActivity extends Activity {
 
     public void openUpdateDialog(TodoEntry currentEntry) {
         this.currentTodoEntry = currentEntry;
-        updateDialog.showEntry(currentEntry);
+        updateDialog.setEntry(currentEntry);
     }
 
 }

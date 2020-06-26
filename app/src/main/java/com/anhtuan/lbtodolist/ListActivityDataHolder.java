@@ -3,9 +3,8 @@ package com.anhtuan.lbtodolist;
 import android.util.Log;
 import android.widget.Toast;
 import com.android.volley.Response;
-import com.anhtuan.custom.ChangeItemDialog;
 import com.anhtuan.custom.ListViewArrayAdapter;
-import com.anhtuan.custom.UpdateItemDialog;
+import com.anhtuan.custom.ModifyItemDialog;
 import com.anhtuan.global.dataholder.AllItemListDataHolder;
 import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.http.TodoListDAO;
@@ -69,13 +68,8 @@ public class ListActivityDataHolder {
         }, requestErrorListener, basicAuth);
     }
 
-    public void updateItemFromList(TodoEntry oldEntry, UpdateItemDialog updateDialog) {
-        TodoEntry newEntry =
-                new TodoEntry(updateDialog.getUdNameET().getText().toString(),
-                        oldEntry.getDate(), oldEntry.getLanguage(),
-                        updateDialog.getUdAmountET().getText().toString(),
-                        Long.valueOf(updateDialog.getUdAmountET().getText().toString()),
-                        );
+    public void updateItemFromList(TodoEntry oldEntry, ModifyItemDialog updateDialog) {
+        TodoEntry newEntry = personifiedRawTodoListEntry(updateDialog.getRawEntry());
         updateItemFromListRequestDAO(oldEntry, newEntry);
     }
 
@@ -98,12 +92,8 @@ public class ListActivityDataHolder {
         }, requestErrorListener, basicAuth);
     }
 
-    public void addToListRequestDAO(ChangeItemDialog createDialog) {
-        String itemName = createDialog.getCdNameET().getText().toString();
-        String itemCategory = createDialog.getCdCategorySpinner().getSelectedItem().toString();
-        Long itemAmount = Long.valueOf(createDialog.getCdAmountET().getText().toString());
-        TodoEntry entry = new TodoEntry(itemName, System.currentTimeMillis(), ListActivity.LANGUAGE, itemCategory, itemAmount);
-
+    public void addToListRequestDAO(ModifyItemDialog createDialog) {
+        TodoEntry entry = personifiedRawTodoListEntry(createDialog.getRawEntry());
         int index = listViewArrayAdapter.findEntry(entry);
         if ( index >= 0) {
             TodoEntry oldEntry = listViewArrayAdapter.getItem(index);
@@ -116,7 +106,6 @@ public class ListActivityDataHolder {
         // good enough for now
         String jsonBody = "["+gson.toJson(entry)+"]";
         listViewArrayAdapter.add(entry);
-        Log.d("DEBUG", jsonBody);
         todoListDAO.addToListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -125,6 +114,16 @@ public class ListActivityDataHolder {
                 updateAdapter();
             }
         }, requestErrorListener, basicAuth);
+    }
+
+    public TodoEntry personifiedRawTodoListEntry(TodoEntry rawEntry) {
+        return new TodoEntry(rawEntry.getValue(),
+                System.currentTimeMillis(),
+                ListActivity.LANGUAGE,
+                rawEntry.getKeywordCategory(),
+                rawEntry.getAmount(),
+                UserDataHolder.getUser().getTodoListGroups().get(0),
+                UserDataHolder.getUser().getUserId());
     }
 
     public void getListDAO() {

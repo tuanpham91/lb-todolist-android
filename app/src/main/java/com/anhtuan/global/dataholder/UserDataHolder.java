@@ -3,8 +3,6 @@ package com.anhtuan.global.dataholder;
 import com.anhtuan.pojo.User;
 
 public class UserDataHolder {
-    private User user;
-
     private static User currentUser;
 
     public static User getUser() {
