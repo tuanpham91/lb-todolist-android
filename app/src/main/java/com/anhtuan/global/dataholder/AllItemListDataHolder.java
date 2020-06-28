@@ -6,7 +6,7 @@ public class AllItemListDataHolder {
     private static ArrayList<String> allUniqueItemList;
 
     public static ArrayList<String> getAllUniqueItemList() {
-        if (getAllUniqueItemList() == null) {
+        if (allUniqueItemList == null) {
             allUniqueItemList = new ArrayList<>();
         }
         return allUniqueItemList;

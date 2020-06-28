@@ -1,6 +1,5 @@
 package com.anhtuan.lbtodolist;
 
-import android.util.Log;
 import android.widget.Toast;
 import com.android.volley.Response;
 import com.anhtuan.custom.ListViewArrayAdapter;
@@ -10,6 +9,7 @@ import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.http.TodoListDAO;
 import com.anhtuan.pojo.TodoEntry;
 import com.anhtuan.pojo.User;
+import com.anhtuan.pojo.UserGroup;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +38,15 @@ public class ListActivityDataHolder {
         todoListDAO = TodoListDAO.getInstance(listActivity.getApplicationContext());
         cacher = DataCacher.getCacher(listActivity.getApplicationContext());
         listViewArrayAdapter = new ListViewArrayAdapter(android.R.layout.simple_list_item_1, listActivity);
-        this.basicAuth = cacher.readStringFromFile(cacher.basicAuthFile);
+        basicAuth = cacher.readStringFromFile(cacher.basicAuthFile);
+        updateTodoList(cacher.readStringFromFile(cacher.localListFile));
+        updateAllItemListFromString( cacher.readStringFromFile(cacher.localAllItemsFile));
         getUserPersonalInfo();
+        getUserGroup();
     }
 
     private void getUserPersonalInfo() {
-        todoListDAO.getUser(new Response.Listener<String>() {
+        todoListDAO.getUserRequest(new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 User user = gson.fromJson(response, User.class);
@@ -52,9 +55,29 @@ public class ListActivityDataHolder {
         }, requestErrorListener, basicAuth);
     }
 
+    private void getUserGroup() {
+        todoListDAO.getUserGroupRequest(new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                UserGroup[] groups = gson.fromJson(response, UserGroup[].class);
+                updateCacheUserGroup(groups);
+            }
+        }, requestErrorListener, basicAuth);
+    }
+
+    private void updateCacheUserGroup(UserGroup[] groups) {
+        for (int i = 0; i< groups.length ; i ++) {
+            if (groups[i].getGroupType() == UserGroup.todoGroupType) {
+                UserDataHolder.getUser().getTodoListGroups().add(groups[i].getGroupId());
+            } else {
+                UserDataHolder.getUser().getExpenseGroups().add(groups[i].getGroupId());
+            }
+        }
+        cacher.saveStringToFile(cacher.userInfoFile, gson.toJson(UserDataHolder.getUser()));
+    }
+
     public void updateAllItemListFromString(String response) {
         AllItemListDataHolder.setAllUniqueItemList(new ArrayList<>(Arrays.asList(response.split(";"))));
-        // Still needs to notify the adapter
     }
 
     public void deleteFromListRequestDAO(TodoEntry entry) {
@@ -95,25 +118,29 @@ public class ListActivityDataHolder {
     public void addToListRequestDAO(ModifyItemDialog createDialog) {
         TodoEntry entry = personifiedRawTodoListEntry(createDialog.getRawEntry());
         int index = listViewArrayAdapter.findEntry(entry);
+
         if ( index >= 0) {
-            TodoEntry oldEntry = listViewArrayAdapter.getItem(index);
-            entry.setAmount(entry.getAmount() + oldEntry.getAmount());
-            updateItemFromListRequestDAO(oldEntry, entry );
-            Toast alreadyExistToast = Toast.makeText(listActivity.getApplicationContext(), "Item already exists, merged amount..", Toast.LENGTH_LONG);
-            alreadyExistToast.show();
+            updateExistingEntry(listViewArrayAdapter.getItem(index), entry);
             return;
         }
+
         // good enough for now
         String jsonBody = "["+gson.toJson(entry)+"]";
         listViewArrayAdapter.add(entry);
         todoListDAO.addToListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Request", "Response :" + response);
                 getListDAO();
                 updateAdapter();
             }
         }, requestErrorListener, basicAuth);
+    }
+
+    public void updateExistingEntry(TodoEntry oldEntry, TodoEntry entry) {
+        entry.setAmount(entry.getAmount() + oldEntry.getAmount());
+        updateItemFromListRequestDAO(oldEntry, entry );
+        Toast alreadyExistToast = Toast.makeText(listActivity.getApplicationContext(), "Item already exists, merged amount..", Toast.LENGTH_LONG);
+        alreadyExistToast.show();
     }
 
     public TodoEntry personifiedRawTodoListEntry(TodoEntry rawEntry) {
@@ -127,7 +154,7 @@ public class ListActivityDataHolder {
     }
 
     public void getListDAO() {
-        todoListDAO.getList(new Response.Listener<String>() {
+        todoListDAO.getTodoListRequest(new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
@@ -148,24 +175,8 @@ public class ListActivityDataHolder {
         listViewArrayAdapter.notifyDataSetChanged();
     }
 
-    public DataCacher getCacher() {
-        return cacher;
-    }
-
     public ListViewArrayAdapter getListViewArrayAdapter() {
         return listViewArrayAdapter;
-    }
-
-    public String getBasicAuth() {
-        return basicAuth;
-    }
-
-    public TodoListDAO getTodoListDAO() {
-        return todoListDAO;
-    }
-
-    public void setBasicAuth(String basicAuth) {
-        this.basicAuth = basicAuth;
     }
 
 }

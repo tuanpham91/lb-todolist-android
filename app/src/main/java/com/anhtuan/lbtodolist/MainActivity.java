@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.anhtuan.http.HttpRequestImpl;
 import com.anhtuan.http.RequestQueueProvider;
 import com.anhtuan.http.TodoListDAO;
 import java.util.Base64;
@@ -25,8 +21,11 @@ public class MainActivity extends Activity {
     DataCacher cacher;
     RequestQueueProvider requestQueueProvider;
 
-    public MainActivity() {
-        super();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+
         loginButton = (Button) findViewById(R.id.l_a_login_button);
         accountEditText = (EditText) findViewById(R.id.l_a_account_name);
         dialog = new AlertDialog.Builder(this)
@@ -41,10 +40,6 @@ public class MainActivity extends Activity {
                 login();
             }
         });
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
         Intent i = getIntent();
         cacher = DataCacher.getCacher(this.getApplicationContext());
         Bundle extras = i.getExtras();
@@ -52,9 +47,6 @@ public class MainActivity extends Activity {
         if (!cacher.readStringFromFile(cacher.localListFile).isEmpty() && extras == null){
             moveToListActivity();
         }
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
 
     }
@@ -92,7 +84,7 @@ public class MainActivity extends Activity {
                 dialog.show();
             }
         };
-        TodoListDAO.getInstance(this.getApplicationContext()).getList(responseListener, errorListener, authString);
+        TodoListDAO.getInstance(this.getApplicationContext()).getTodoListRequest(responseListener, errorListener, authString);
     }
 
     private void moveToListActivity() {

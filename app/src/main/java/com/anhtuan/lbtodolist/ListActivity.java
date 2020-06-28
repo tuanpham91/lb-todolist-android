@@ -26,18 +26,6 @@ public class ListActivity extends Activity {
     Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
     private ListActivityDataHolder lADH;
-    private DataCacher cacher;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Get TodoList Local File ()
-        cacher = lADH.getCacher();
-        String todoListLocal = cacher.readStringFromFile(cacher.localListFile);
-        String allItemsLocal = cacher.readStringFromFile(cacher.localAllItemsFile);
-        lADH.updateTodoList(todoListLocal);
-        lADH.updateAllItemListFromString(allItemsLocal);
-    }
 
     private void handleUnauthorized() {
         Intent moveToMainActivity = new Intent(this, MainActivity.class);
@@ -101,7 +89,6 @@ public class ListActivity extends Activity {
                 lADH.getListDAO();
             }
         });
-
     }
 
     @Override
@@ -109,7 +96,7 @@ public class ListActivity extends Activity {
 
     public void openCreateDialog() {
         if (createDialog == null) {
-            createDialog = new ModifyItemDialog(this.getApplicationContext(), "Add Entry", new View.OnClickListener() {
+            createDialog = new ModifyItemDialog(ListActivity.this, "Add Entry", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     createDialog.dismiss();
