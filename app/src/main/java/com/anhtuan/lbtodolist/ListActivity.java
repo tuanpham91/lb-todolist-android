@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.anhtuan.custom.ModifyItemDialog;
+import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.pojo.TodoEntry;
 
 public class ListActivity extends Activity {
@@ -25,7 +26,7 @@ public class ListActivity extends Activity {
 
     Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
-    private ListActivityDataHolder lADH;
+    private DataHolder lADH;
 
     private void handleUnauthorized() {
         Intent moveToMainActivity = new Intent(this, MainActivity.class);
@@ -35,7 +36,7 @@ public class ListActivity extends Activity {
         unauthorizedToast.show();
     }
 
-    public ListActivityDataHolder getlADH() {
+    public DataHolder getlADH() {
         return lADH;
     }
 
@@ -55,7 +56,7 @@ public class ListActivity extends Activity {
                 }
             }
         };
-        lADH = new ListActivityDataHolder(this, requestErrorListener);
+        lADH = new DataHolder(this, requestErrorListener);
         clickButton = (Button) findViewById(R.id.placeholder);
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
@@ -83,10 +84,12 @@ public class ListActivity extends Activity {
             }
         });
 
+        String currentGroupId = UserDataHolder.getUser().getTodoListGroups().get(0);
+
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lADH.getListDAO();
+                lADH.getListDAO(currentGroupId);
             }
         });
     }

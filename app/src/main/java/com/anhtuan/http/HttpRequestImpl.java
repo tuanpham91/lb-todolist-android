@@ -15,6 +15,7 @@ import java.util.Map;
 public class HttpRequestImpl extends StringRequest {
     private String jsonBody;
     private String basicAuth = "";
+    private Map<String, String> params;
 
     public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, String basicAuth) {
         super(method, url, listener, new Response.ErrorListener() {
@@ -25,12 +26,25 @@ public class HttpRequestImpl extends StringRequest {
         });
         this.basicAuth = basicAuth;
         this.jsonBody = jsonBody;
+        this.params = new HashMap<String, String>();
     }
 
     public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, Response.ErrorListener errListener, String basicAuth) {
         super(method, url, listener, errListener);
         this.basicAuth = basicAuth;
         this.jsonBody = jsonBody;
+        this.params = new HashMap<String, String>();
+    }
+
+
+    public HttpRequestImpl(int method, String url, String jsonBody, Response.Listener<String> listener, Response.ErrorListener errListener, String basicAuth, Map<String, String> params) {
+        this(method, url, jsonBody, listener, errListener, basicAuth);
+        this.params = params;
+    }
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+        return params;
     }
 
     @Override

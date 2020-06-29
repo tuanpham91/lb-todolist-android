@@ -4,9 +4,12 @@ import android.content.Context;
 import com.android.volley.Request;
 import com.android.volley.Response;
 
+import java.util.Collections;
+import java.util.Map;
+
 public class TodoListDAO {
     public static String baseUrl = "http://192.168.178.26:8080";
-    public static String addUrl = baseUrl + "/todolist/todolist";
+    public static String getTodoListUrl = baseUrl + "/todolist/todolist";
     public static String postUrl = baseUrl + "/todolist/addtodolist";
     public static String deleteUrl = baseUrl + "/todolist/deletetodolist";
     public static String updateUrl = baseUrl + "/todolist/updatetodolist";
@@ -34,8 +37,8 @@ public class TodoListDAO {
         buildAndAddRequestToQueue(GET_METHOD, TodoListDAO.authentication, "", responseListener, errorListener, auth);
     }
 
-    public void getTodoListRequest(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth) {
-        buildAndAddRequestToQueue(GET_METHOD, TodoListDAO.addUrl, "", repsonseListener, errorListener, auth);
+    public void getTodoListRequest(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth, String groupId) {
+        buildAndAddRequestToQueueWithParams(GET_METHOD, TodoListDAO.getTodoListUrl, "", repsonseListener, errorListener, auth, Collections.singletonMap("groupId", groupId));
     }
 
     public void addToListRequest(String jsonBody, Response.Listener responseListner, Response.ErrorListener errorListener, String auth) {
@@ -59,7 +62,12 @@ public class TodoListDAO {
     }
 
     public void buildAndAddRequestToQueue(int method, String url, String body, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        HttpRequestImpl request = new HttpRequestImpl(method, url, body, responseListener, errorListener,  auth);
+        HttpRequestImpl request = new HttpRequestImpl(method, url, body, responseListener, errorListener, auth);
+        requestQueueProvider.addToQueue(request);
+    }
+
+    public void buildAndAddRequestToQueueWithParams(int method, String url, String body, Response.Listener responseListener, Response.ErrorListener errorListener, String auth, Map<String,String> params) {
+        HttpRequestImpl request = new HttpRequestImpl(method, url, body, responseListener, errorListener, auth, params);
         requestQueueProvider.addToQueue(request);
     }
 }

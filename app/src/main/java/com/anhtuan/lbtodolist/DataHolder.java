@@ -17,7 +17,7 @@ import java.util.Arrays;
 /**
  * An instance of this class is created to handle data access for the activity
  */
-public class ListActivityDataHolder {
+public class DataHolder {
 
     private TodoListDAO todoListDAO;
     private Gson gson;
@@ -27,7 +27,10 @@ public class ListActivityDataHolder {
     private DataCacher cacher;
     private Response.ErrorListener requestErrorListener;
 
-    public ListActivityDataHolder(ListActivity listActivity, Response.ErrorListener requestErrorListener) {
+    // Assume user only have one todolist Id
+    private String currentGroupId;
+
+    public DataHolder(ListActivity listActivity, Response.ErrorListener requestErrorListener) {
         this.listActivity = listActivity;
         this.requestErrorListener = requestErrorListener;
         appStartPreparation();
@@ -43,6 +46,7 @@ public class ListActivityDataHolder {
         updateAllItemListFromString( cacher.readStringFromFile(cacher.localAllItemsFile));
         getUserPersonalInfo();
         getUserGroup();
+        currentGroupId = UserDataHolder.getUser().getTodoListGroups().get(0);
     }
 
     private void getUserPersonalInfo() {
@@ -101,7 +105,7 @@ public class ListActivityDataHolder {
         todoListDAO.updateItemFromListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                getListDAO();
+                getListDAO(currentGroupId);
             }
         }, requestErrorListener, basicAuth);
     }
@@ -130,7 +134,7 @@ public class ListActivityDataHolder {
         todoListDAO.addToListRequest(jsonBody, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                getListDAO();
+                getListDAO(currentGroupId);
                 updateAdapter();
             }
         }, requestErrorListener, basicAuth);
@@ -153,14 +157,14 @@ public class ListActivityDataHolder {
                 UserDataHolder.getUser().getUserId());
     }
 
-    public void getListDAO() {
+    public void getListDAO(String groupId) {
         todoListDAO.getTodoListRequest(new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 cacher.cacheTodoListContent(response);
                 updateTodoList(response);
             }
-        }, requestErrorListener, basicAuth);
+        }, requestErrorListener, basicAuth, groupId);
     }
 
     public void updateTodoList(String response) {
