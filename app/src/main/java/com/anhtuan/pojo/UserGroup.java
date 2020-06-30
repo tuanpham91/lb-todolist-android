@@ -6,7 +6,7 @@ public class UserGroup {
     private String groupType;
 
     public static final String todoGroupType = "TodoGroup";
-    public static final String expenseGroupType = "TodoGroup";
+    public static final String expenseGroupType = "ExpenseGroup";
 
     public UserGroup(String userId, String groupId, String groupType) {
         this.userId = userId;

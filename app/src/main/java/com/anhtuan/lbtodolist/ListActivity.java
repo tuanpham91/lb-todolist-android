@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.anhtuan.custom.ModifyItemDialog;
-import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.pojo.TodoEntry;
 
 public class ListActivity extends Activity {
@@ -26,7 +25,7 @@ public class ListActivity extends Activity {
 
     Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
-    private DataHolder lADH;
+    private DataHolder dataHolder;
 
     private void handleUnauthorized() {
         Intent moveToMainActivity = new Intent(this, MainActivity.class);
@@ -37,7 +36,7 @@ public class ListActivity extends Activity {
     }
 
     public DataHolder getlADH() {
-        return lADH;
+        return dataHolder;
     }
 
     @Override
@@ -47,8 +46,9 @@ public class ListActivity extends Activity {
         requestErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("Request-Error", "ERROR");
+
                 if (error.networkResponse == null) {
-                    Log.d("Debug-NoInternet", error.getLocalizedMessage());
                     return;
                 }
                 if (error.networkResponse.statusCode == 401) {
@@ -56,11 +56,11 @@ public class ListActivity extends Activity {
                 }
             }
         };
-        lADH = new DataHolder(this, requestErrorListener);
+        dataHolder = new DataHolder(this, requestErrorListener);
         clickButton = (Button) findViewById(R.id.placeholder);
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
-        todoListView.setAdapter(lADH.getListViewArrayAdapter());
+        todoListView.setAdapter(dataHolder.getListViewArrayAdapter());
 
         updateDialog = new ModifyItemDialog(this.getApplicationContext(), "Update Item",
                 new View.OnClickListener() {
@@ -72,7 +72,7 @@ public class ListActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        lADH.updateItemFromList(currentTodoEntry, updateDialog);
+                        dataHolder.updateItemFromList(currentTodoEntry, updateDialog);
                         updateDialog.dismiss();
                     }
                 });
@@ -84,12 +84,11 @@ public class ListActivity extends Activity {
             }
         });
 
-        String currentGroupId = UserDataHolder.getUser().getTodoListGroups().get(0);
 
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lADH.getListDAO(currentGroupId);
+                dataHolder.getListDAO(dataHolder.getCurrentGroupId());
             }
         });
     }
@@ -107,11 +106,11 @@ public class ListActivity extends Activity {
             }, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    lADH.addToListRequestDAO(createDialog);
+                    dataHolder.addToListRequestDAO(createDialog);
                     createDialog.dismiss();
                 }
             });
-            lADH.updateItemListRequestDAO();
+            dataHolder.updateItemListRequestDAO();
         }
         createDialog.setDefault();
         createDialog.show();

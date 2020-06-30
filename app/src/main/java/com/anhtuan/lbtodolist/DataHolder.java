@@ -1,5 +1,6 @@
 package com.anhtuan.lbtodolist;
 
+import android.util.Log;
 import android.widget.Toast;
 import com.android.volley.Response;
 import com.anhtuan.custom.ListViewArrayAdapter;
@@ -46,7 +47,6 @@ public class DataHolder {
         updateAllItemListFromString( cacher.readStringFromFile(cacher.localAllItemsFile));
         getUserPersonalInfo();
         getUserGroup();
-        currentGroupId = UserDataHolder.getUser().getTodoListGroups().get(0);
     }
 
     private void getUserPersonalInfo() {
@@ -64,14 +64,17 @@ public class DataHolder {
             @Override
             public void onResponse(String response) {
                 UserGroup[] groups = gson.fromJson(response, UserGroup[].class);
+                // Update currentGroupId
                 updateCacheUserGroup(groups);
+                // TODO : This assume the user only have one todo list group
+                currentGroupId = UserDataHolder.getUser().getTodoListGroups().get(0);
             }
         }, requestErrorListener, basicAuth);
     }
 
     private void updateCacheUserGroup(UserGroup[] groups) {
         for (int i = 0; i< groups.length ; i ++) {
-            if (groups[i].getGroupType() == UserGroup.todoGroupType) {
+            if (groups[i].getGroupType().equals(UserGroup.todoGroupType)) {
                 UserDataHolder.getUser().getTodoListGroups().add(groups[i].getGroupId());
             } else {
                 UserDataHolder.getUser().getExpenseGroups().add(groups[i].getGroupId());
@@ -158,6 +161,7 @@ public class DataHolder {
     }
 
     public void getListDAO(String groupId) {
+        Log.d("DataHolder.getListDao", "Get list for group :" + groupId + " with creds " + basicAuth );
         todoListDAO.getTodoListRequest(new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -183,4 +187,7 @@ public class DataHolder {
         return listViewArrayAdapter;
     }
 
+    public String getCurrentGroupId() {
+        return currentGroupId;
+    }
 }

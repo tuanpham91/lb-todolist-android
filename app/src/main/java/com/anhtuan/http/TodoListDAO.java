@@ -5,6 +5,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TodoListDAO {
@@ -67,7 +68,15 @@ public class TodoListDAO {
     }
 
     public void buildAndAddRequestToQueueWithParams(int method, String url, String body, Response.Listener responseListener, Response.ErrorListener errorListener, String auth, Map<String,String> params) {
-        HttpRequestImpl request = new HttpRequestImpl(method, url, body, responseListener, errorListener, auth, params);
+        HttpRequestImpl request = new HttpRequestImpl(method, buildUrlWithParam(url, params), body, responseListener, errorListener, auth);
         requestQueueProvider.addToQueue(request);
+    }
+
+    public String buildUrlWithParam(String url, Map<String, String> params) {
+        StringBuilder sb = new StringBuilder(url);
+        for (String key: params.keySet()) {
+            sb.append("?").append(key).append("=").append(params.get(key));
+        }
+        return sb.toString();
     }
 }

@@ -6,7 +6,7 @@ public class UserDataHolder {
     private static User currentUser;
 
     public static User getUser() {
-        if (currentUser != null) {
+        if (currentUser == null) {
             currentUser = new User();
         }
         return currentUser;

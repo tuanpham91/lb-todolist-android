@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,7 +73,8 @@ public class MainActivity extends Activity {
         Response.Listener responseListener = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                cacher.cacheTodoListContent(response);
+
+                Log.d("Authentication", response);
                 moveToListActivity();
             }
         };
