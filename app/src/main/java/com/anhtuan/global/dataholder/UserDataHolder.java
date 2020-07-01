@@ -12,8 +12,9 @@ public class UserDataHolder {
         return currentUser;
     }
 
-    public static void setUser(User newUser) {
-        currentUser = newUser;
+    public static void updateUser(User user) {
+        getUser().setUserId(user.getUserId());
+        getUser().setUserName(user.getUserName());
+        getUser().setUserShortName(user.getUserShortName());
     }
-
 }

@@ -45,6 +45,7 @@ public class DataHolder {
         basicAuth = cacher.readStringFromFile(cacher.basicAuthFile);
         updateTodoList(cacher.readStringFromFile(cacher.localListFile));
         updateAllItemListFromString( cacher.readStringFromFile(cacher.localAllItemsFile));
+        updateItemListRequestDAO();
         getUserPersonalInfo();
         getUserGroup();
     }
@@ -54,7 +55,7 @@ public class DataHolder {
             @Override
             public void onResponse(String response) {
                 User user = gson.fromJson(response, User.class);
-                UserDataHolder.setUser(user);
+                UserDataHolder.updateUser(user);
             }
         }, requestErrorListener, basicAuth);
     }
@@ -76,15 +77,21 @@ public class DataHolder {
         for (int i = 0; i< groups.length ; i ++) {
             if (groups[i].getGroupType().equals(UserGroup.todoGroupType)) {
                 UserDataHolder.getUser().getTodoListGroups().add(groups[i].getGroupId());
+                Log.d("Group-Id", "Update Todo Group ID : " + groups[i].getGroupId());
             } else {
+
+                Log.d("Group-Id", "Update Expense Group ID : " + groups[i].getGroupId());
                 UserDataHolder.getUser().getExpenseGroups().add(groups[i].getGroupId());
             }
         }
+
         cacher.saveStringToFile(cacher.userInfoFile, gson.toJson(UserDataHolder.getUser()));
     }
 
     public void updateAllItemListFromString(String response) {
         AllItemListDataHolder.setAllUniqueItemList(new ArrayList<>(Arrays.asList(response.split(";"))));
+        // cache the item too
+        cacher.saveStringToFile(cacher.localAllItemsFile, response);
     }
 
     public void deleteFromListRequestDAO(TodoEntry entry) {
@@ -161,7 +168,6 @@ public class DataHolder {
     }
 
     public void getListDAO(String groupId) {
-        Log.d("DataHolder.getListDao", "Get list for group :" + groupId + " with creds " + basicAuth );
         todoListDAO.getTodoListRequest(new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

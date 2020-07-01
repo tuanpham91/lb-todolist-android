@@ -1,6 +1,5 @@
 package com.anhtuan.custom;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
             @Override
             public void onClick(View v) {
                 deleteItem(position);
-                parentActivity.getlADH().deleteFromListRequestDAO(currentEntry);
+                parentActivity.getDataHolder().deleteFromListRequestDAO(currentEntry);
             }
         });
 
@@ -81,7 +80,6 @@ public class ListViewArrayAdapter extends ArrayAdapter<TodoEntry> {
     public int findEntry(TodoEntry entry) {
         for (int i = 0; i < itemList.size(); i++) {
             if (itemList.get(i).getValue().equals(entry.getValue())) {
-                Log.d("DEBUG", "found index " + i + " of size " + itemList.size());
                 return i;
             }
         }

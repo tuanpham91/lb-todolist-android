@@ -35,7 +35,7 @@ public class ListActivity extends Activity {
         unauthorizedToast.show();
     }
 
-    public DataHolder getlADH() {
+    public DataHolder getDataHolder() {
         return dataHolder;
     }
 
@@ -46,7 +46,7 @@ public class ListActivity extends Activity {
         requestErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Request-Error", "ERROR");
+                Log.d("Request-Error", error.getLocalizedMessage());
 
                 if (error.networkResponse == null) {
                     return;
@@ -62,7 +62,7 @@ public class ListActivity extends Activity {
         todoListView = (ListView) findViewById(R.id.todoList);
         todoListView.setAdapter(dataHolder.getListViewArrayAdapter());
 
-        updateDialog = new ModifyItemDialog(this.getApplicationContext(), "Update Item",
+        updateDialog = new ModifyItemDialog(ListActivity.this, "Update Item",
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
