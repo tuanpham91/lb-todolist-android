@@ -15,10 +15,12 @@ public class DataCacher {
     public File localListFile;
     public File localAllItemsFile;
     public File basicAuthFile;
+    public File userInfoFile;
 
     private static String localListFileName = "todolist-cache";
     private static String localAllItemsFileName= "allitems-cache";
     private static String basicAuthFileName = "basicAuth-cache";
+    private static String userInfoFileName = "userInfo-cache";
 
     public String readStringFromFile(File file) {
         try {
@@ -46,6 +48,7 @@ public class DataCacher {
             cacher.localListFile = new File(context.getFilesDir(), localListFileName);
             cacher.localAllItemsFile = new File(context.getFilesDir(), localAllItemsFileName);
             cacher.basicAuthFile = new File(context.getFilesDir(), basicAuthFileName);
+            cacher.userInfoFile = new File(context.getFilesDir(), userInfoFileName);
         }
         return cacher;
     }
