@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.anhtuan.custom.ModifyItemDialog;
@@ -17,7 +17,6 @@ import com.anhtuan.pojo.TodoEntry;
 public class ListActivity extends Activity {
     // Pi : 26 Local : 21
     public static String LANGUAGE = "Deutsch";
-    Button clickButton;
     ImageButton addButton;
     ListView todoListView;
     ModifyItemDialog createDialog;
@@ -43,6 +42,16 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view_activity);
+
+        final SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.pullToRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTodoList();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         requestErrorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -57,7 +66,6 @@ public class ListActivity extends Activity {
             }
         };
         dataHolder = new DataHolder(this, requestErrorListener);
-        clickButton = (Button) findViewById(R.id.placeholder);
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
         todoListView.setAdapter(dataHolder.getListViewArrayAdapter());
@@ -84,13 +92,10 @@ public class ListActivity extends Activity {
             }
         });
 
+    }
 
-        clickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dataHolder.getListDAO(dataHolder.getCurrentGroupId());
-            }
-        });
+    public void refreshTodoList() {
+        dataHolder.getListDAO(dataHolder.getCurrentGroupId());
     }
 
     @Override
