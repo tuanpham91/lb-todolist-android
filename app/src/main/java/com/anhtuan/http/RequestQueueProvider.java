@@ -34,7 +34,6 @@ public class RequestQueueProvider {
         impendingRequests.add(request);
         if (isNetworkAvailable()) {
             while (isNetworkAvailable() && !impendingRequests.isEmpty()) {
-                Log.d("Late Request Service", "Sending Delayed Requests : " + request);
                 Request nextRequest = impendingRequests.pop();
                 requestQueue.add(nextRequest);
             }

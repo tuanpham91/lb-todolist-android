@@ -10,9 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.http.RequestQueueProvider;
-import com.anhtuan.http.TodoListDAO;
+import com.anhtuan.http.UserDataDAO;
+
 import java.util.Base64;
 
 public class MainActivity extends Activity {
@@ -88,7 +88,7 @@ public class MainActivity extends Activity {
             }
         };
         // This must be initialized first.
-        TodoListDAO.getInstance(this.getApplicationContext()).getUserRequest(responseListener, errorListener, authString);
+        UserDataDAO.getInstance(this.getApplicationContext()).getUserRequest(responseListener, errorListener, authString);
     }
 
     private void moveToListActivity() {
