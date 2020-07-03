@@ -53,7 +53,6 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view_activity);
-
         gson = new Gson();
         // initialize broadcastReceiver
         broadcastReceiver = new BroadcastReceiver() {
@@ -62,7 +61,7 @@ public class ListActivity extends Activity {
                 handleBroadcastMessage(intent);
             }
         };
-        IntentFilter intentFilter = new IntentFilter();
+        IntentFilter intentFilter = new IntentFilter(DataHolder.listActivityIntentFilter);
         this.registerReceiver(broadcastReceiver, intentFilter);
 
         listViewArrayAdapter = new ListViewArrayAdapter(android.R.layout.simple_list_item_1, this);
@@ -87,7 +86,7 @@ public class ListActivity extends Activity {
                 }
             }
         };
-        dataHolder = new DataHolder(this, requestErrorListener);
+
         addButton = (ImageButton) findViewById(R.id.addEntryButton);
         todoListView = (ListView) findViewById(R.id.todoList);
         todoListView.setAdapter(listViewArrayAdapter);
@@ -113,6 +112,7 @@ public class ListActivity extends Activity {
                 openCreateDialog();
             }
         });
+        dataHolder = new DataHolder(this, requestErrorListener);
 
     }
 

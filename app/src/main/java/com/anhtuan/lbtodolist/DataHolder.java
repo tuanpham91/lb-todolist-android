@@ -29,7 +29,7 @@ public class DataHolder {
     private DataCacher cacher;
     private Response.ErrorListener requestErrorListener;
     private Context context;
-    private static final String listActivityIntentFilter = "ListActivity";
+    public static final String listActivityIntentFilter = "ListActivity";
 
     // Assume user only have one todolist Id
     private String currentGroupId;
