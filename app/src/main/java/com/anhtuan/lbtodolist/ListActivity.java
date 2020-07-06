@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -17,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.anhtuan.command.IntentCommand;
 import com.anhtuan.custom.ListViewArrayAdapter;
 import com.anhtuan.custom.ModifyItemDialog;
+import com.anhtuan.listener.gesture.OnSwipeTouchListener;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
 
@@ -33,6 +35,7 @@ public class ListActivity extends Activity {
     private BroadcastReceiver broadcastReceiver;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Gson gson;
+    private LinearLayout rootLayout;
 
     private void handleUnauthorized() {
         Intent moveToMainActivity = new Intent(this, MainActivity.class);
@@ -49,7 +52,16 @@ public class ListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_view_activity);
+        rootLayout = (LinearLayout) findViewById(R.id.list_activity_root_layout);
+        setContentView(rootLayout);
+
+        rootLayout.setOnTouchListener(new OnSwipeTouchListener(this.getApplicationContext()) {
+            @Override
+            public void onSwipeLeft() {
+                // TODO
+            }
+        });
+
         gson = new Gson();
         // initialize broadcastReceiver
         broadcastReceiver = new BroadcastReceiver() {
@@ -58,6 +70,7 @@ public class ListActivity extends Activity {
                 handleBroadcastMessage(intent);
             }
         };
+
         IntentFilter intentFilter = new IntentFilter(DataHolder.listActivityIntentFilter);
         this.registerReceiver(broadcastReceiver, intentFilter);
 
