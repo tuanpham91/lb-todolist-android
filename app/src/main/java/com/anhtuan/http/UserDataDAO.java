@@ -7,7 +7,7 @@ import com.android.volley.Response;
 import java.util.Collections;
 import java.util.Map;
 
-public class TodoListDAO {
+public class UserDataDAO {
     public static String baseUrl = "http://192.168.178.26:8080";
     public static String getTodoListUrl = baseUrl + "/todolist/todolist";
     public static String postUrl = baseUrl + "/todolist/addtodolist";
@@ -19,26 +19,26 @@ public class TodoListDAO {
     public static int GET_METHOD = Request.Method.GET;
     public static int POST_METHOD = Request.Method.POST;
 
-    private static TodoListDAO todoListDAO;
+    private static UserDataDAO userDataDAO;
     private RequestQueueProvider requestQueueProvider;
 
-    private TodoListDAO(RequestQueueProvider requestQueue) {
+    private UserDataDAO(RequestQueueProvider requestQueue) {
         this.requestQueueProvider = requestQueue;
     }
 
-    public static TodoListDAO getInstance(Context context) {
-        if (todoListDAO == null) {
-            todoListDAO = new TodoListDAO(RequestQueueProvider.getRequestQueueProvider(context));
+    public static UserDataDAO getInstance(Context context) {
+        if (userDataDAO == null) {
+            userDataDAO = new UserDataDAO(RequestQueueProvider.getRequestQueueProvider(context));
         }
-        return todoListDAO;
+        return userDataDAO;
     }
 
     public void getUserRequest(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        buildAndAddRequestToQueue(GET_METHOD, TodoListDAO.authentication, "", responseListener, errorListener, auth);
+        buildAndAddRequestToQueue(GET_METHOD, UserDataDAO.authentication, "", responseListener, errorListener, auth);
     }
 
     public void getTodoListRequest(Response.Listener repsonseListener, Response.ErrorListener errorListener, String auth, String groupId) {
-        buildAndAddRequestToQueueWithParams(GET_METHOD, TodoListDAO.getTodoListUrl, "", repsonseListener, errorListener, auth, Collections.singletonMap("groupId", groupId));
+        buildAndAddRequestToQueueWithParams(GET_METHOD, UserDataDAO.getTodoListUrl, "", repsonseListener, errorListener, auth, Collections.singletonMap("groupId", groupId));
     }
 
     public void addToListRequest(String jsonBody, Response.Listener responseListner, Response.ErrorListener errorListener, String auth) {
@@ -46,15 +46,15 @@ public class TodoListDAO {
     }
 
     public void updateItemListRequest(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        buildAndAddRequestToQueue(GET_METHOD, TodoListDAO.allItemUrl, "", responseListener, errorListener, auth);
+        buildAndAddRequestToQueue(GET_METHOD, UserDataDAO.allItemUrl, "", responseListener, errorListener, auth);
     }
 
     public void deleteFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        buildAndAddRequestToQueue(POST_METHOD, TodoListDAO.deleteUrl, jsonBody, responseListener, errorListener, auth);
+        buildAndAddRequestToQueue(POST_METHOD, UserDataDAO.deleteUrl, jsonBody, responseListener, errorListener, auth);
     }
 
     public void updateItemFromListRequest(String jsonBody, Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
-        buildAndAddRequestToQueue(POST_METHOD, TodoListDAO.updateUrl, jsonBody, responseListener, errorListener,  auth);
+        buildAndAddRequestToQueue(POST_METHOD, UserDataDAO.updateUrl, jsonBody, responseListener, errorListener,  auth);
     }
 
     public void getUserGroupRequest(Response.Listener responseListener, Response.ErrorListener errorListener, String auth) {
