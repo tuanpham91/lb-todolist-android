@@ -81,7 +81,6 @@ public class DataHolder {
                 UserDataHolder.getUser().getTodoListGroups().add(groups[i].getGroupId());
                 Log.d("Group-Id", "Update Todo Group ID : " + groups[i].getGroupId());
             } else {
-
                 Log.d("Group-Id", "Update Expense Group ID : " + groups[i].getGroupId());
                 UserDataHolder.getUser().getExpenseGroups().add(groups[i].getGroupId());
             }

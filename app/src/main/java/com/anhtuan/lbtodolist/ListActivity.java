@@ -144,7 +144,7 @@ public class ListActivity extends Activity {
     }
 
     public void addItemToTodoList(ModifyItemDialog createDialog) {
-        TodoEntry entry = personifiedRawTodoListEntry(createDialog.getRawEntry());
+        TodoEntry entry = dataHolder.personifiedRawTodoListEntry(createDialog.getRawEntry());
         int index = listViewArrayAdapter.findEntry(entry);
         if ( index >= 0) {
             dataHolder.updateExistingEntry(listViewArrayAdapter.getItem(index), entry);
@@ -182,14 +182,5 @@ public class ListActivity extends Activity {
         updateDialog.setEntry(currentEntry);
     }
 
-    public TodoEntry personifiedRawTodoListEntry(TodoEntry rawEntry) {
-        return new TodoEntry(rawEntry.getValue(),
-                System.currentTimeMillis(),
-                ListActivity.LANGUAGE,
-                rawEntry.getKeywordCategory(),
-                rawEntry.getAmount(),
-                UserDataHolder.getUser().getTodoListGroups().get(0),
-                UserDataHolder.getUser().getUserId());
-    }
 
 }
