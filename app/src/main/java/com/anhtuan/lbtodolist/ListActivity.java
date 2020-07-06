@@ -17,7 +17,6 @@ import com.android.volley.VolleyError;
 import com.anhtuan.command.IntentCommand;
 import com.anhtuan.custom.ListViewArrayAdapter;
 import com.anhtuan.custom.ModifyItemDialog;
-import com.anhtuan.global.dataholder.UserDataHolder;
 import com.anhtuan.pojo.TodoEntry;
 import com.google.gson.Gson;
 
@@ -26,9 +25,7 @@ public class ListActivity extends Activity {
     public static String LANGUAGE = "Deutsch";
     ImageButton addButton;
     ListView todoListView;
-    ModifyItemDialog createDialog;
-    ModifyItemDialog updateDialog;
-
+    ModifyItemDialog createDialog, updateDialog;
     Response.ErrorListener requestErrorListener;
     public TodoEntry currentTodoEntry;
     private DataHolder dataHolder;
@@ -95,12 +92,6 @@ public class ListActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        updateDialog.dismiss();
-                    }
-                },
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
                         dataHolder.updateItemFromList(currentTodoEntry, updateDialog);
                         updateDialog.dismiss();
                     }
@@ -128,11 +119,6 @@ public class ListActivity extends Activity {
             createDialog = new ModifyItemDialog(ListActivity.this, "Add Entry", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    createDialog.dismiss();
-                }
-            }, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     addItemToTodoList(createDialog);
                     createDialog.dismiss();
                 }
@@ -152,7 +138,6 @@ public class ListActivity extends Activity {
         }
         listViewArrayAdapter.add(entry);
         dataHolder.addToListRequestDAO(entry);
-
     }
 
     public void handleBroadcastMessage(Intent intent) {
@@ -166,7 +151,6 @@ public class ListActivity extends Activity {
                 break;
             default:
                 break;
-
         }
     }
 
@@ -181,6 +165,5 @@ public class ListActivity extends Activity {
         this.currentTodoEntry = currentEntry;
         updateDialog.setEntry(currentEntry);
     }
-
 
 }
